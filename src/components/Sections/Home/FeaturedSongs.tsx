@@ -1,131 +1,211 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { Play, Pause, Disc3 } from "lucide-react";
-import { cn } from "@src/lib/utils";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { ExternalLink } from "lucide-react";
 
-const PLACEHOLDER_TRACKS = [
-  { id: "01", title: "Track Title 01", duration: "03:42" },
-  { id: "02", title: "Track Title 02", duration: "04:15" },
-  { id: "03", title: "Track Title 03", duration: "03:58" },
-  { id: "04", title: "Track Title 04", duration: "04:21" },
+const MORE_BILLIONAIRES_COVER =
+  "https://i.ffmcdn.com/v1/ffm-delivery-1/E_-P7DRsPbDl5sFEs9AcA42RPxQpXjlj/w_1108,h_1108,c_lfill,f_jpg/link/b0f643a4b9d44101797f7fac6c2bc8fc.jpeg.img";
+
+const MORE_BILLIONAIRES_LINK =
+  "https://orcd.co/wiz_ofuasia-more_billionaires?utm_source=ig&utm_medium=social&utm_content=link_in_bio";
+
+type PlatformLink = {
+  id: string;
+  name: string;
+  href: string;
+  icon: React.ReactNode;
+};
+
+const STREAMING_PLATFORMS: PlatformLink[] = [
+  {
+    id: "spotify",
+    name: "Spotify",
+    href: "https://open.spotify.com/album/5VZtYzPGKsezKAXJVCbh3T",
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-5 fill-current" aria-hidden="true">
+        <path d="M12 1.5C6.2 1.5 1.5 6.2 1.5 12S6.2 22.5 12 22.5 22.5 17.8 22.5 12 17.8 1.5 12 1.5zm4.82 15.15a.75.75 0 0 1-1.03.25c-2.82-1.72-6.37-2.11-10.55-1.15a.75.75 0 1 1-.33-1.46c4.57-1.05 8.49-.6 11.66 1.33a.75.75 0 0 1 .25 1.03zm1.47-3.27a.94.94 0 0 1-1.29.31c-3.23-1.99-8.15-2.56-11.97-1.4a.94.94 0 1 1-.55-1.8c4.36-1.32 9.78-.68 13.5 1.6a.94.94 0 0 1 .31 1.29zm.13-3.4c-3.87-2.3-10.26-2.51-13.96-1.39a1.12 1.12 0 1 1-.65-2.15c4.24-1.29 11.3-1.04 15.76 1.6a1.12 1.12 0 0 1-1.15 1.94z" />
+      </svg>
+    ),
+  },
+  {
+    id: "apple",
+    name: "Apple Music",
+    href: "https://music.apple.com/ng/album/more-billionaires-feat-zoro-swagbag-single/1858224219",
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-5 fill-current" aria-hidden="true">
+        <path d="M17.05 3.12c-.18.02-2.01.36-3.93.75l-4.26.86a1.1 1.1 0 0 0-.86 1.08v8.86a3.48 3.48 0 0 0-1.66-.42c-1.85 0-3.34 1.35-3.34 3.01s1.49 3.01 3.34 3.01c1.82 0 3.31-1.31 3.34-2.94V8.8l6.15-1.24v5.75a3.48 3.48 0 0 0-1.66-.42c-1.85 0-3.34 1.35-3.34 3.01s1.49 3.01 3.34 3.01c1.84 0 3.34-1.35 3.34-3.01V4.19a1.08 1.08 0 0 0-1.46-1.07z" />
+      </svg>
+    ),
+  },
+  {
+    id: "youtube",
+    name: "YouTube",
+    href: "https://www.youtube.com/watch?v=5Zlkoo44BwQ",
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-5 fill-current" aria-hidden="true">
+        <path d="M21.58 7.19a2.75 2.75 0 0 0-1.94-1.95C17.93 4.78 12 4.78 12 4.78s-5.93 0-7.64.46a2.75 2.75 0 0 0-1.94 1.95A28.7 28.7 0 0 0 2 12a28.7 28.7 0 0 0 .42 4.81 2.75 2.75 0 0 0 1.94 1.95c1.71.46 7.64.46 7.64.46s5.93 0 7.64-.46a2.75 2.75 0 0 0 1.94-1.95A28.7 28.7 0 0 0 22 12a28.7 28.7 0 0 0-.42-4.81zM10 15V9l5.2 3-5.2 3z" />
+      </svg>
+    ),
+  },
+  {
+    id: "tidal",
+    name: "TIDAL",
+    href: "https://tidal.com/album/478590025",
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-5 fill-current" aria-hidden="true">
+        <path d="M4.5 7.5 8 11 4.5 14.5 1 11 4.5 7.5zm7.5 0L15.5 11 12 14.5 8.5 11 12 7.5zm7.5 0L23 11l-3.5 3.5L16 11l3.5-3.5zM12 15l3.5 3.5L12 22l-3.5-3.5L12 15z" />
+      </svg>
+    ),
+  },
+  {
+    id: "deezer",
+    name: "Deezer",
+    href: "https://www.deezer.com/album/869358692",
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-5 fill-current" aria-hidden="true">
+        <path d="M18.5 5h3.5v2.2h-3.5V5zm0 3.3h3.5v2.2h-3.5V8.3zm0 3.3h3.5v2.2h-3.5v-2.2zm0 3.3h3.5v2.2h-3.5v-2.2zm-4.5-6.6h3.5v2.2H14V8.3zm0 3.3h3.5v2.2H14v-2.2zm0 3.3h3.5v2.2H14v-2.2zm-4.5 0H13v2.2H9.5v-2.2zm0-3.3H13v2.2H9.5v-2.2zM5 14.9h3.5v2.2H5v-2.2z" />
+      </svg>
+    ),
+  },
+  {
+    id: "amazon",
+    name: "Amazon Music",
+    href: "https://music.amazon.com/albums/B0G4WMVDXC",
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-5 fill-current" aria-hidden="true">
+        <path d="M12 3a9 9 0 1 0 9 9 9.01 9.01 0 0 0-9-9zm3.95 12.78c-1.85 1.15-4.4 1.66-6.95 1.07-1.46-.34-2.75-.96-3.79-1.76-.26-.2-.04-.51.25-.35 1.38.75 3.09 1.24 4.89 1.36 1.85.13 3.81-.17 5.39-.86.4-.18.71.24.21.54zm.92-1.45c-.15-.19-.97-.09-1.35-.04-.11.01-.13-.08-.03-.16.66-.46 1.74-.33 1.87-.17.13.16-.03 1.25-.66 1.77-.1.08-.19.04-.15-.07.14-.35.46-1.14.32-1.33zM8.5 8.5h1.6v5.2H8.5V8.5zm3.1 0h1.6v5.2h-1.6V8.5zm3.1 0h1.6v5.2h-1.6V8.5z" />
+      </svg>
+    ),
+  },
+  {
+    id: "soundcloud",
+    name: "SoundCloud",
+    href: "https://soundcloud.com/wizofuasia/more-billionaires-feat-zoro",
+    icon: (
+      <svg viewBox="0 0 24 24" className="size-5 fill-current" aria-hidden="true">
+        <path d="M11.5 8.2v8.8h6.9a2.85 2.85 0 0 0 .3-5.68 4.45 4.45 0 0 0-7.2-3.12zM9.2 9.4v7.6h1.3V8.7a4.6 4.6 0 0 0-1.3.7zm-2.3 1.9V17h1.3v-6.4a4.2 4.2 0 0 0-1.3.7zm-2.3 1.6V17h1.3v-4.5c-.47.06-.9.2-1.3.4zm-2.3 1.4a2.3 2.3 0 0 0 0 2.7h1.3v-2.7H2.3z" />
+      </svg>
+    ),
+  },
 ];
 
 export default function HomeFeaturedSongs() {
-  const [activeTrack, setActiveTrack] = useState<string | null>(null);
-
   return (
-    <section className="py-16 lg:py-24">
+    <section className="overflow-x-clip py-14 sm:py-16 lg:py-24">
       <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-8">
-        {/* Micdrop Split: Album Cover + Vinyl Peek (Left) & New Album Out Now (Right) */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+        {/* Micdrop Split: More Billionaires Cover + Vinyl Peek (Left) & New Music (Right) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-12 lg:gap-16 items-center">
           {/* Album Cover + Peeking Vinyl */}
-          <div className="lg:col-span-5 flex justify-center lg:justify-start">
-            <div className="relative w-64 h-64 sm:w-80 sm:h-80">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-5 flex justify-center lg:justify-start pr-8 sm:pr-12 lg:pr-0"
+          >
+            <div className="relative w-56 h-56 sm:w-72 sm:h-72 lg:w-80 lg:h-80">
               {/* Peeking Vinyl Disc */}
               <div
                 aria-hidden="true"
-                className="absolute top-3 -right-12 sm:-right-16 size-[230px] sm:size-[290px] rounded-full bg-gradient-to-br from-[#2a2a2a] via-[#111111] to-[#222222] border border-white/10 shadow-2xl flex items-center justify-center"
+                className="absolute top-3 -right-8 sm:-right-12 lg:-right-16 size-[200px] sm:size-[260px] lg:size-[290px] rounded-full bg-gradient-to-br from-[#2a2a2a] via-[#111111] to-[#222222] border border-white/10 shadow-2xl flex items-center justify-center"
               >
                 <div className="size-[65%] rounded-full border border-white/5 flex items-center justify-center">
-                  <div className="size-16 sm:size-20 rounded-full bg-[#D70E1D] flex items-center justify-center shadow-inner">
+                  <div className="size-14 sm:size-16 lg:size-20 rounded-full bg-[#D70E1D] flex items-center justify-center shadow-inner">
                     <div className="size-3 rounded-full bg-[#111111]" />
                   </div>
                 </div>
               </div>
 
-              {/* Square Album Cover Placeholder */}
-              <div className="relative z-10 w-full h-full bg-[#333132] border border-white/15 shadow-2xl flex flex-col items-center justify-center p-6 text-center">
-                <Disc3 className="size-12 text-[#D70E1D] mb-3" />
-                <span className="font-display text-sm font-bold uppercase tracking-[0.2em] text-white">
-                  Album Artwork
-                </span>
-                <span className="mt-1 text-[11px] uppercase tracking-widest text-white/50">
-                  public/images/
-                </span>
+              {/* More Billionaires Cover Artwork */}
+              <div className="relative z-10 w-full h-full overflow-hidden bg-[#181818] border border-white/15 shadow-2xl">
+                <Image
+                  src={MORE_BILLIONAIRES_COVER}
+                  alt="Wiz Ofuasia - More Billionaires (feat. Zoro) Cover"
+                  fill
+                  sizes="(max-width: 640px) 224px, (max-width: 1024px) 288px, 320px"
+                  className="object-cover"
+                />
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Right: New Album Out Now + Sharp Micdrop Buttons */}
-          <div className="lg:col-span-7 lg:pl-8 space-y-6 text-left">
+          {/* Right: New Music + Sharp Micdrop Buttons */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ duration: 0.6 }}
+            className="lg:col-span-7 min-w-0 lg:pl-8 space-y-6 text-left"
+          >
             <div className="space-y-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#D70E1D]">
+                More Billionaires (feat. Zoro)
+              </p>
               <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold uppercase tracking-[0.04em] leading-[1.08] text-white">
-                NEW ALBUM
-                <br />
-                OUT NOW
+                NEW MUSIC
               </h2>
-              <p className="max-w-md text-sm leading-relaxed text-white/65">
-                Featured release showcase. Replace with album description and streaming links once assets are ready.
+              <p className="max-w-md text-sm leading-relaxed text-white/70">
+                Stream the latest release from Wiz Ofuasia (Wizboyy) featuring Zoro on your preferred music platform.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
-              <Link
-                href="/songs"
-                className="inline-flex items-center justify-center border border-white/40 bg-transparent px-7 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-all hover:border-[#D70E1D] hover:bg-[#D70E1D]"
+              <a
+                href={MORE_BILLIONAIRES_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 border border-white/40 bg-transparent px-7 py-3.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-all hover:border-[#D70E1D] hover:bg-[#D70E1D]"
               >
-                LISTEN TO THE ALBUM
-              </Link>
+                <span>STREAM SINGLE</span>
+                <ExternalLink className="size-3.5" />
+              </a>
               <Link
                 href="/songs"
                 className="inline-flex items-center justify-center bg-white px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] text-[#222222] transition-all hover:bg-[#D70E1D] hover:text-white"
               >
-                BUY
+                ALL SONGS
               </Link>
             </div>
+          </motion.div>
+        </div>
+
+        {/* Horizontal Streaming Platforms Bar for More Billionaires */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.55 }}
+          className="mt-16 border-y border-white/10 py-6"
+        >
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+            <span className="text-[10px] font-bold uppercase tracking-[0.26em] text-white/55 shrink-0">
+              LISTEN ON PLATFORMS
+            </span>
+
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-3.5">
+              {STREAMING_PLATFORMS.map((platform) => (
+                <a
+                  key={platform.id}
+                  href={platform.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Listen to More Billionaires on ${platform.name}`}
+                  className="group inline-flex items-center gap-2.5 border border-white/15 bg-white/[0.03] px-4 py-2.5 text-white/80 transition-all duration-300 hover:border-[#D70E1D] hover:bg-[#D70E1D]/15 hover:text-white"
+                >
+                  <span className="text-white/75 transition-colors group-hover:text-[#D70E1D]">
+                    {platform.icon}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.18em]">
+                    {platform.name}
+                  </span>
+                </a>
+              ))}
+            </div>
           </div>
-        </div>
-
-        {/* Micdrop-style Tracklist */}
-        <div className="mt-20 border-t border-white/10">
-          {PLACEHOLDER_TRACKS.map((track) => {
-            const isPlaying = activeTrack === track.id;
-            return (
-              <button
-                key={track.id}
-                type="button"
-                onClick={() =>
-                  setActiveTrack((prev) => (prev === track.id ? null : track.id))
-                }
-                className="w-full flex items-center justify-between py-4 px-2 border-b border-white/10 text-left transition-colors hover:bg-white/[0.03] group"
-              >
-                <div className="flex items-center gap-5">
-                  <span
-                    className={cn(
-                      "inline-flex size-8 items-center justify-center border transition-colors",
-                      isPlaying
-                        ? "border-[#D70E1D] bg-[#D70E1D] text-white"
-                        : "border-white/25 text-white/75 group-hover:border-[#D70E1D] group-hover:text-white"
-                    )}
-                  >
-                    {isPlaying ? (
-                      <Pause className="size-3.5" />
-                    ) : (
-                      <Play className="size-3.5 ml-0.5" />
-                    )}
-                  </span>
-                  <span className="text-xs font-semibold tracking-widest text-white/50">
-                    {track.id}
-                  </span>
-                  <span
-                    className={cn(
-                      "font-display text-sm sm:text-base font-bold uppercase tracking-wider transition-colors",
-                      isPlaying ? "text-[#D70E1D]" : "text-white"
-                    )}
-                  >
-                    {track.title}
-                  </span>
-                </div>
-
-                <span className="text-xs tracking-widest text-white/60">
-                  {track.duration}
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

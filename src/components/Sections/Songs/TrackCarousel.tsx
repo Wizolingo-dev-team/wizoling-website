@@ -52,11 +52,11 @@ export default function SongsTrackCarousel() {
         transition={{ duration: 0.5 }}
         className="mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-12 mb-10 flex flex-wrap items-end justify-between gap-4"
       >
-        <div>
+        <div className="min-w-0">
           <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#D70E1D]">
             Discography, Singles &amp; Albums
           </p>
-          <h1 className="mt-1 font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold uppercase tracking-wide text-white">
+          <h1 className="mt-1 font-display text-[clamp(2rem,5vw,3.75rem)] font-extrabold uppercase tracking-wide text-white break-words">
             SONGS &amp; ALBUMS
           </h1>
         </div>
@@ -130,13 +130,13 @@ export default function SongsTrackCarousel() {
                   </div>
 
                   {/* Larger Cover Image + Peeking Vinyl Disc */}
-                  <div className="relative mx-auto aspect-square w-[280px] sm:w-[330px] lg:w-[360px]">
+                  <div className="relative mx-auto aspect-square w-[228px] sm:w-[300px] lg:w-[350px]">
                     {/* Vinyl Disc */}
                     <div
                       aria-hidden="true"
                       className={cn(
-                        "absolute top-3 size-[256px] sm:size-[306px] lg:size-[336px] rounded-full bg-gradient-to-br from-[#2a2a2a] via-[#111111] to-[#222222] border border-white/15 shadow-2xl flex items-center justify-center transition-all duration-700",
-                        isCenter ? "-right-10 sm:-right-14" : "right-0",
+                        "absolute top-3 size-[206px] sm:size-[276px] lg:size-[326px] rounded-full bg-gradient-to-br from-[#2a2a2a] via-[#111111] to-[#222222] border border-white/15 shadow-2xl flex items-center justify-center transition-all duration-700",
+                        isCenter ? "-right-7 sm:-right-12" : "right-0",
                         isPlaying && "animate-[spin_6s_linear_infinite]"
                       )}
                     >

@@ -29,11 +29,11 @@ export default function VideosGrid() {
           transition={{ duration: 0.5 }}
           className="mb-12 flex flex-wrap items-end justify-between gap-4"
         >
-          <div>
+          <div className="min-w-0">
             <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#D70E1D]">
               Official Visuals
             </p>
-            <h2 className="mt-2 font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold uppercase tracking-wide text-white">
+            <h2 className="mt-2 font-display text-[clamp(1.75rem,4vw,3rem)] font-extrabold uppercase tracking-wide text-white break-words">
               MUSIC VIDEOS
             </h2>
           </div>

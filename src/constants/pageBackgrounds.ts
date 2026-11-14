@@ -21,8 +21,8 @@ export const PAGE_BACKGROUNDS: Record<string, PageBackgroundOverlayProps> = {
     grayscale: true,
   },
   "/events": {
-    imageSrc: "/images/wizolingo1.JPG",
-    position: "center 18%",
+    imageSrc: "/images/wizolingo4.JPG",
+    position: "center 20%",
     grayscale: true,
   },
   "/gallery": {

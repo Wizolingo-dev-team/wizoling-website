@@ -2,13 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-
-const PLACEHOLDER_EVENTS = [
-  { date: "TBA 2026", city: "Lagos, NG", venue: "Venue Name Placeholder" },
-  { date: "TBA 2026", city: "London, UK", venue: "Venue Name Placeholder" },
-  { date: "TBA 2026", city: "Atlanta, US", venue: "Venue Name Placeholder" },
-  { date: "TBA 2026", city: "Toronto, CA", venue: "Venue Name Placeholder" },
-];
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { HOME_UPCOMING_TOURS } from "@src/constants/events";
 
 export default function HomeUpcomingEvents() {
   return (
@@ -31,31 +27,57 @@ export default function HomeUpcomingEvents() {
           </Link>
         </div>
 
-        {/* Micdrop Events List */}
+        {/* Upcoming Wiz Ofuasia Tours (from wizofuasia.com/events) */}
         <div className="border-t border-white/10">
-          {PLACEHOLDER_EVENTS.map((event, idx) => (
-            <div
-              key={idx}
-              className="grid grid-cols-1 sm:grid-cols-12 items-center gap-4 py-5 border-b border-white/10 transition-colors hover:bg-white/[0.03] px-2"
+          {HOME_UPCOMING_TOURS.map((event, idx) => (
+            <motion.div
+              key={event.id}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.45, delay: idx * 0.08 }}
+              className="grid grid-cols-1 md:grid-cols-12 items-center gap-6 py-6 border-b border-white/10 transition-colors hover:bg-white/[0.03] px-2 group"
             >
-              <div className="sm:col-span-3 font-display text-sm font-bold uppercase tracking-widest text-[#D70E1D]">
-                {event.date}
-              </div>
-              <div className="sm:col-span-4 font-display text-base font-bold uppercase tracking-wide text-white">
-                {event.city}
-              </div>
-              <div className="sm:col-span-3 text-xs uppercase tracking-widest text-white/65">
-                {event.venue}
-              </div>
-              <div className="sm:col-span-2 flex sm:justify-end">
+              {/* Flyer Thumbnail */}
+              <div className="md:col-span-2 flex justify-start">
                 <Link
                   href="/events"
-                  className="inline-flex items-center justify-center border border-white/35 px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white transition-all hover:border-[#D70E1D] hover:bg-[#D70E1D]"
+                  className="relative size-24 sm:size-28 shrink-0 overflow-hidden border border-white/15 bg-[#181818] shadow-lg"
                 >
-                  TICKETS
+                  <Image
+                    src={event.flyerUrl}
+                    alt={`${event.title} - ${event.date}`}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
                 </Link>
               </div>
-            </div>
+
+              {/* Date */}
+              <div className="md:col-span-3 font-display text-sm font-bold uppercase tracking-widest text-[#D70E1D]">
+                {event.date}
+              </div>
+
+              {/* Event Title & Location */}
+              <div className="md:col-span-5 space-y-1">
+                <h3 className="font-display text-lg sm:text-xl font-extrabold uppercase tracking-wide text-white">
+                  {event.title}
+                </h3>
+                <p className="text-xs uppercase tracking-widest text-white/65">
+                  {event.location}
+                </p>
+              </div>
+
+              {/* Status Badge */}
+              <div className="md:col-span-2 flex md:justify-end">
+                <Link
+                  href="/events"
+                  className="inline-flex items-center justify-center bg-[#D70E1D] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.22em] text-white transition-all hover:bg-white hover:text-[#111111]"
+                >
+                  {event.status}
+                </Link>
+              </div>
+            </motion.div>
           ))}
         </div>
       </div>

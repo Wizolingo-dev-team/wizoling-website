@@ -2,40 +2,71 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Play, Pause, Heart, Repeat2, Share2 } from "lucide-react";
+import { Play, Pause, Heart, Repeat2, Share2, ExternalLink } from "lucide-react";
 import { cn } from "@src/lib/utils";
+
+const YOLO_COVER =
+  "https://i.ffmcdn.com/v1/ffm-delivery-1/bg8fjpPmhCn2UeXda1a_fvVczwY09uuv/w_1108,h_1108,c_lfill,f_jpg/link/5bf2e5571c00004b00612871/6a873ea82900008100faedab_aa23bed70cb55d70c6de28c07daa37ca.jpg.img";
+
+const YOLO_SMART_LINK =
+  "https://orcd.co/wiz_ofuasia-yolo?utm_source=ig&utm_medium=social&utm_content=link_in_bio";
 
 export default function HomeFeaturedPlayerCard() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [liked, setLiked] = useState(false);
 
+  const handleShare = async () => {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({
+          title: "Wiz Ofuasia - Yolo (Single)",
+          url: YOLO_SMART_LINK,
+        });
+        return;
+      } catch {
+        // fallback below
+      }
+    }
+    window.open(YOLO_SMART_LINK, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <section className="py-16 lg:py-24">
       <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[540px] overflow-hidden border border-white/15 bg-[#181818] shadow-2xl">
-          {/* Top Portrait Image with Overlay Title */}
+          {/* Top Cover Image with Yolo Single Overlay */}
           <div className="relative aspect-[4/4.3] w-full overflow-hidden bg-[#222222]">
             <Image
-              src="/images/wizolingo2.JPG"
-              alt="Wiz Ofuasia Featured Track"
+              src={YOLO_COVER}
+              alt="Wiz Ofuasia - Yolo - Single"
               fill
-              className="object-cover object-[center_20%] grayscale contrast-115"
+              className="object-cover transition-transform duration-700 hover:scale-[1.03]"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/15 to-black/80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/15 to-black/85" />
 
             {/* Top-left Micdrop Editorial Overlay */}
             <div className="relative z-10 p-6 sm:p-8 space-y-1.5">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#D70E1D]">
-                [MUSIC]
+                [SINGLE]
               </p>
               <h3 className="font-display text-2xl sm:text-3xl font-extrabold uppercase tracking-wide text-white">
-                FEATURED SESSION
+                YOLO
               </h3>
-              <p className="text-xs text-white/75">
+              <p className="text-xs text-white/80">
                 by <span className="underline underline-offset-4">Wiz Ofuasia</span>{" "}
-                <span className="mx-1.5 text-white/40">|</span> 2026
+                <span className="mx-1.5 text-white/40">|</span> Single
               </p>
             </div>
+
+            {/* Hidden Audio Embed when Playing */}
+            {isPlaying && (
+              <iframe
+                title="Wiz Ofuasia - Yolo"
+                src="https://www.youtube-nocookie.com/embed/WMS6zROCjGY?autoplay=1&rel=0"
+                allow="autoplay; encrypted-media"
+                className="sr-only"
+              />
+            )}
           </div>
 
           {/* Bottom Attached Audio Player Bar (Micdrop / Mixcloud style) */}
@@ -44,16 +75,16 @@ export default function HomeFeaturedPlayerCard() {
               <div className="flex items-center gap-3 min-w-0">
                 <div className="relative size-11 shrink-0 overflow-hidden border border-white/15 bg-[#333132]">
                   <Image
-                    src="/images/wiz_event.JPG"
-                    alt="Track Thumbnail"
+                    src={YOLO_COVER}
+                    alt="Wiz Ofuasia - Yolo Cover"
                     fill
-                    className="object-cover object-[center_36%]"
+                    className="object-cover"
                   />
                 </div>
                 <button
                   type="button"
                   onClick={() => setIsPlaying((prev) => !prev)}
-                  aria-label={isPlaying ? "Pause track" : "Play track"}
+                  aria-label={isPlaying ? "Pause Yolo" : "Play Yolo"}
                   className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-[#D70E1D]"
                 >
                   {isPlaying ? (
@@ -64,42 +95,50 @@ export default function HomeFeaturedPlayerCard() {
                 </button>
                 <div className="min-w-0">
                   <p className="truncate text-xs font-bold text-white">
-                    Wiz Ofuasia — Live Session Vol. 1
+                    Wiz Ofuasia - Yolo - Single
                   </p>
                   <div className="mt-0.5 flex items-center gap-2 text-[11px] text-white/60">
                     <span className="truncate">by Wiz Ofuasia</span>
-                    <span className="border border-white/25 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white/80">
-                      FOLLOW
-                    </span>
+                    <a
+                      href={YOLO_SMART_LINK}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 border border-white/25 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white/85 transition-colors hover:border-[#D70E1D] hover:bg-[#D70E1D] hover:text-white"
+                    >
+                      <span>STREAM</span>
+                      <ExternalLink className="size-2.5" />
+                    </a>
                   </div>
                 </div>
               </div>
 
               <span className="hidden sm:inline-block shrink-0 text-[10px] font-bold uppercase tracking-[0.25em] text-white/45">
-                AUDIO
+                SINGLE
               </span>
             </div>
 
             {/* Scrub Bar & Controls */}
             <div className="flex items-center gap-3 text-[10px] text-white/50">
-              <span>00:00</span>
+              <span>{isPlaying ? "PLAYING" : "00:00"}</span>
               <div className="relative h-1 flex-1 bg-white/15 overflow-hidden">
                 <div
                   className={cn(
-                    "h-full bg-[#D70E1D] transition-all duration-300",
-                    isPlaying ? "w-1/3" : "w-1/12"
+                    "h-full bg-[#D70E1D] transition-all duration-500",
+                    isPlaying ? "w-1/2 animate-pulse" : "w-1/12"
                   )}
                 />
               </div>
-              <span>-03:45</span>
+              <span>YOLO</span>
               <div className="flex items-center gap-2.5 pl-1">
-                <button
-                  type="button"
-                  aria-label="Repeat"
+                <a
+                  href={YOLO_SMART_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Open Yolo on streaming platforms"
                   className="hover:text-white transition-colors"
                 >
                   <Repeat2 className="size-3.5" />
-                </button>
+                </a>
                 <button
                   type="button"
                   onClick={() => setLiked((prev) => !prev)}
@@ -113,7 +152,8 @@ export default function HomeFeaturedPlayerCard() {
                 </button>
                 <button
                   type="button"
-                  aria-label="Share track"
+                  onClick={handleShare}
+                  aria-label="Share Yolo"
                   className="hover:text-white transition-colors"
                 >
                   <Share2 className="size-3.5" />
@@ -126,4 +166,3 @@ export default function HomeFeaturedPlayerCard() {
     </section>
   );
 }
-

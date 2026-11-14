@@ -13,7 +13,7 @@ export default function HomeHero() {
           transition={{ duration: 0.6 }}
           className="space-y-4"
         >
-          <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-[112px] font-extrabold uppercase tracking-[0.04em] leading-none text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)]">
+          <h1 className="font-display text-[clamp(2.5rem,9vw,7rem)] font-extrabold uppercase tracking-[0.04em] leading-none text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.85)] break-words">
             WIZ OFUASIA
           </h1>
           <p className="font-display text-xs sm:text-sm md:text-base font-extrabold uppercase tracking-[0.28em] text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]">
