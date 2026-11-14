@@ -1,13 +1,10 @@
 import React from "react";
-import SongsBanner from "./Banner";
-import SongsTrackList from "./TrackList";
+import SongsTrackCarousel from "./TrackCarousel";
 
 export default function SongsSections() {
   return (
-    <div className="space-y-0 pb-20">
-      <SongsBanner />
-      <SongsTrackList />
+    <div className="space-y-0 pb-12">
+      <SongsTrackCarousel />
     </div>
   );
 }
-

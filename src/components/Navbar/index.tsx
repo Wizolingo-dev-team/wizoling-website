@@ -12,22 +12,51 @@ import {
   Home,
   Music,
   Calendar,
+  Youtube,
+  Radio,
+  Disc3,
+  Instagram,
+  Film,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_LINKS } from "@src/constants/navigation";
-import CustomButton from "@src/components/CustomButton";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from "@src/components/ui/sheet";
+import BookingModal from "@src/components/BookingModal";
 import { cn } from "@src/lib/utils";
 
-// Routes that have a dark hero section (#222222 / #333132)
-const DARK_HERO_ROUTES = [
-  "/",
-  "/songs",
-  "/events",
-  "/gallery",
-  "/biography",
-  "/news",
-  "/podcast",
-  "/booking",
+const SOCIAL_LINKS = [
+  {
+    label: "YouTube",
+    href: "https://www.youtube.com/@wiz_ofuasia",
+    icon: Youtube,
+    external: true,
+  },
+  {
+    label: "wizboyyVEVO",
+    href: "https://www.youtube.com/@wizboyyVEVO",
+    icon: Radio,
+    external: true,
+  },
+  {
+    label: "Instagram",
+    href: "https://www.instagram.com/wizofuasia/",
+    icon: Instagram,
+    external: true,
+  },
+  {
+    label: "Threads",
+    href: "https://www.threads.com/@wizofuasia?xmt=AQG0dH14npSpoXkylf7lOm8yRAV6FXk4Z-dxhFXJBVroc3g",
+    icon: Disc3,
+    external: true,
+  },
+  { label: "Songs", href: "/songs", icon: Music, external: false },
+  { label: "Videos", href: "/videos", icon: Film, external: false },
 ];
 
 export default function Navbar() {
@@ -86,38 +115,30 @@ export default function Navbar() {
     }, 120);
   };
 
-  const hasDarkHero = DARK_HERO_ROUTES.includes(pathname);
-
-  // Determine light mode navbar appearance when unscrolled on light routes
-  const isLight = !scrolled && !hasDarkHero;
-
   return (
     <>
+      {/* Fixed Navbar (Micdrop Band-Home desktop layout + Wiz Ofuasia brand colors) */}
       <header
         className={cn(
-          "sticky top-0 z-50 w-full transition-all duration-300",
+          "fixed top-0 inset-x-0 z-50 w-full transition-all duration-300",
           scrolled
-            ? "border-b border-white/10 bg-[#222222]/95 backdrop-blur-md shadow-xl text-white"
-            : hasDarkHero
-            ? "border-none bg-[#222222] text-white"
-            : "border-none bg-background dark:bg-[#222222] text-[#222222] dark:text-white"
+            ? "border-b border-white/10 bg-[#222222]/90 backdrop-blur-md shadow-xl text-white"
+            : "border-none bg-transparent text-white"
         )}
       >
-        <div className="container mx-auto flex h-16 lg:h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-          {/* Brand Logo Placeholder (Navbar/index.tsx) */}
+        <div className="mx-auto flex h-16 lg:h-20 max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-10">
+          {/* Left: Brand Wordmark */}
           <Link href="/" className="flex items-center gap-2 group shrink-0">
-            <span
-              className={cn(
-                "font-display text-lg sm:text-xl font-bold tracking-wider uppercase transition-colors",
-                isLight ? "text-[#222222]" : "text-white"
-              )}
-            >
-              Navbar/Logo
+            <span className="font-display text-lg sm:text-xl font-bold tracking-tight text-white transition-colors group-hover:text-[#D70E1D]">
+              Wiz Ofuasia
             </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
+          {/* Center: Desktop Uppercase Navigation Links (Micdrop layout) */}
+          <nav
+            aria-label="Desktop Navigation"
+            className="hidden lg:flex items-center gap-6 xl:gap-8"
+          >
             {NAV_LINKS.map((link) => {
               const hasSub = Boolean(link.subItems && link.subItems.length > 0);
               const isDropdownOpen = openDropdown === link.label;
@@ -143,18 +164,16 @@ export default function Navbar() {
                       }
                       aria-expanded={isDropdownOpen}
                       className={cn(
-                        "flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-semibold transition-colors",
+                        "relative flex items-center gap-1 py-1 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors",
                         isActive
-                          ? "text-[#D70E1D]"
-                          : isLight
-                          ? "text-[#222222]/85 hover:text-[#D70E1D]"
-                          : "text-white/90 hover:text-[#D70E1D]"
+                          ? "text-white after:absolute after:inset-x-0 after:-bottom-0.5 after:h-[1.5px] after:bg-[#D70E1D]"
+                          : "text-white/80 hover:text-white"
                       )}
                     >
                       <span>{link.label}</span>
                       <ChevronDown
                         className={cn(
-                          "size-3.5 transition-transform duration-200",
+                          "size-3 transition-transform duration-200",
                           isDropdownOpen && "rotate-180"
                         )}
                       />
@@ -163,22 +182,20 @@ export default function Navbar() {
                     <Link
                       href={link.href}
                       className={cn(
-                        "flex items-center px-3 py-2 rounded-lg text-sm font-semibold transition-colors",
+                        "relative py-1 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors",
                         isActive
-                          ? "text-[#D70E1D]"
-                          : isLight
-                          ? "text-[#222222]/85 hover:text-[#D70E1D]"
-                          : "text-white/90 hover:text-[#D70E1D]"
+                          ? "text-white after:absolute after:inset-x-0 after:-bottom-0.5 after:h-[1.5px] after:bg-[#D70E1D]"
+                          : "text-white/80 hover:text-white"
                       )}
                     >
                       {link.label}
                     </Link>
                   )}
 
-                  {/* Dropdown / Mega-menu support */}
+                  {/* Dropdown support */}
                   {hasSub && isDropdownOpen && link.subItems && (
-                    <div className="absolute left-0 top-full pt-2 z-50 min-w-[240px]">
-                      <div className="rounded-2xl border border-white/10 bg-[#333132] p-2 shadow-2xl">
+                    <div className="absolute left-0 top-full pt-3 z-50 min-w-[220px]">
+                      <div className="border border-white/10 bg-[#222222]/95 backdrop-blur-md p-2 shadow-2xl">
                         {link.subItems.map((sub) => {
                           const isSubExactActive = pathname === sub.href;
                           return (
@@ -187,15 +204,15 @@ export default function Navbar() {
                               href={sub.href}
                               onClick={() => setOpenDropdown(null)}
                               className={cn(
-                                "flex items-center justify-between gap-4 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors",
+                                "flex items-center justify-between gap-4 px-4 py-2.5 text-xs uppercase tracking-widest font-medium transition-colors",
                                 isSubExactActive
-                                  ? "bg-[#D70E1D] text-white font-semibold"
-                                  : "text-white/90 hover:bg-[#D70E1D] hover:text-white"
+                                  ? "bg-[#D70E1D] text-white"
+                                  : "text-white/85 hover:bg-[#D70E1D] hover:text-white"
                               )}
                             >
                               <span>{sub.label}</span>
                               {sub.hasRightArrow && (
-                                <ChevronRight className="size-4 shrink-0 opacity-80" />
+                                <ChevronRight className="size-3.5 shrink-0 opacity-80" />
                               )}
                             </Link>
                           );
@@ -208,44 +225,104 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Desktop Right Actions */}
-          <div className="hidden lg:flex items-center gap-3 shrink-0">
-            <Link href="/booking">
-              <CustomButton
-                variant="primary"
-                size="sm"
-                rounded="full"
-                withArrow
-                className="px-5 font-bold shadow-md shadow-[#D70E1D]/20"
-              >
-                Booking
-              </CustomButton>
-            </Link>
+          {/* Right: Social Icons when unscrolled -> 2-line Hamburger + shadcn Slide-In Sheet when scrolled */}
+          <div className="hidden lg:flex items-center justify-end min-w-[160px] shrink-0">
+            {!scrolled ? (
+              <div className="flex items-center gap-3.5">
+                {SOCIAL_LINKS.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href}
+                      aria-label={item.label}
+                      className="text-white/80 hover:text-[#D70E1D] transition-colors"
+                    >
+                      <Icon className="size-4" />
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Open side info panel"
+                    className="group flex flex-col items-end justify-center gap-[6px] p-2 focus:outline-none"
+                  >
+                    <span className="block h-[1.5px] w-7 bg-white transition-colors group-hover:bg-[#D70E1D]" />
+                    <span className="block h-[1.5px] w-7 bg-white transition-colors group-hover:bg-[#D70E1D]" />
+                  </button>
+                </SheetTrigger>
+                <SheetContent
+                  side="right"
+                  className="flex flex-col items-center justify-center text-center bg-[#0D0D0D] border-l border-white/10"
+                >
+                  <div className="space-y-6">
+                    <SheetTitle className="font-display text-2xl font-extrabold tracking-tight text-white">
+                      Wiz Ofuasia
+                    </SheetTitle>
+                    <SheetDescription className="space-y-1.5 text-xs leading-relaxed text-white/75">
+                      <span className="block">Management &amp; Bookings</span>
+                      <span className="block">booking@wizofuasia.com</span>
+                      <span className="block">+234 000 000 0000</span>
+                    </SheetDescription>
+
+                    <div className="flex items-center justify-center gap-4 pt-2">
+                      {SOCIAL_LINKS.map((item) => {
+                        const Icon = item.icon;
+                        return (
+                          <Link
+                            key={item.label}
+                            href={item.href}
+                            aria-label={item.label}
+                            className="text-white/75 hover:text-[#D70E1D] transition-colors"
+                          >
+                            <Icon className="size-4" />
+                          </Link>
+                        );
+                      })}
+                    </div>
+
+                    <div className="pt-4">
+                      <BookingModal
+                        trigger={
+                          <button
+                            type="button"
+                            className="inline-flex items-center justify-center bg-[#D70E1D] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white transition-colors hover:bg-[#B50B18]"
+                          >
+                            BOOKING INQUIRY
+                          </button>
+                        }
+                      />
+                    </div>
+                  </div>
+                </SheetContent>
+              </Sheet>
+            )}
           </div>
 
-          {/* Mobile Top Right Placeholder / Trigger */}
+          {/* Mobile Top Right: Bookings Modal Trigger */}
           <div className="flex items-center gap-2 lg:hidden">
-            <button
-              type="button"
-              onClick={() => setIsOpen(true)}
-              aria-label="Open navigation menu"
-              className={cn(
-                "inline-flex items-center justify-center rounded-xl p-2 transition-colors",
-                isLight
-                  ? "text-[#222222] hover:bg-black/5"
-                  : "text-white hover:bg-white/10"
-              )}
-            >
-              <Menu className="size-5" />
-            </button>
+            <BookingModal
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center bg-[#D70E1D] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#B50B18]"
+                >
+                  Bookings
+                </button>
+              }
+            />
           </div>
         </div>
       </header>
 
-      {/* Mobile App Bottom Tab Bar (< lg only) */}
+      {/* Mobile App Bottom Tab Bar (< lg only — maintained from sparkwebsite) */}
       <nav
         aria-label="Mobile App Tabs"
-        className="fixed bottom-0 inset-x-0 z-50 lg:hidden border-t border-white/10 bg-[#222222]/95 backdrop-blur-xl text-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(0,0,0,0.3)]"
+        className="fixed bottom-0 inset-x-0 z-50 lg:hidden border-t border-white/10 bg-[#222222]/95 backdrop-blur-xl text-white pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(0,0,0,0.45)]"
       >
         <div className="grid grid-cols-4 h-16 items-center px-2">
           <Link
@@ -302,7 +379,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Off-Canvas Mobile Drawer (< lg) with smooth scrolling & Framer Motion */}
+      {/* Off-Canvas Mobile Drawer (< lg — maintained from sparkwebsite) */}
       <AnimatePresence>
         {isOpen && (
           <div className="fixed inset-0 z-[70] lg:hidden">
@@ -330,9 +407,9 @@ export default function Navbar() {
                 <Link
                   href="/"
                   onClick={() => setIsOpen(false)}
-                  className="font-display text-lg font-bold tracking-wider uppercase text-white"
+                  className="font-display text-lg font-bold tracking-tight text-white"
                 >
-                  Navbar/Logo
+                  Wiz Ofuasia
                 </Link>
                 <button
                   type="button"
@@ -425,25 +502,6 @@ export default function Navbar() {
                   );
                 })}
               </nav>
-
-              {/* Drawer Footer CTA */}
-              <div className="p-5 border-t border-white/10 space-y-3 bg-[#1A1A1A] shrink-0 pb-[calc(1.25rem+env(safe-area-inset-bottom))]">
-                <Link
-                  href="/booking"
-                  onClick={() => setIsOpen(false)}
-                  className="block"
-                >
-                  <CustomButton
-                    variant="primary"
-                    size="lg"
-                    rounded="xl"
-                    withArrow
-                    className="w-full justify-center font-bold"
-                  >
-                    Booking
-                  </CustomButton>
-                </Link>
-              </div>
             </motion.aside>
           </div>
         )}
@@ -451,4 +509,3 @@ export default function Navbar() {
     </>
   );
 }
-

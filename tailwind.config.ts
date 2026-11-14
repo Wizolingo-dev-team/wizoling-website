@@ -27,7 +27,7 @@ const config: Config = {
     },
     extend: {
       colors: {
-        /* Wiz Ofuasia Brand Tokens (from wizofuasia.com) */
+        /* Wiz Ofuasia Brand Tokens */
         wiz: {
           red: "#D70E1D",
           "red-dark": "#B50B18",
@@ -35,8 +35,8 @@ const config: Config = {
           charcoal: "#333132",
           muted: "rgba(255, 255, 255, 0.65)",
           white: "#FFFFFF",
-          border: "rgba(52, 50, 51, 0.1)",
-          overlay: "rgba(52, 50, 51, 0.8)",
+          border: "rgba(255, 255, 255, 0.12)",
+          overlay: "rgba(34, 34, 34, 0.85)",
         },
         /* Shadcn & UI System */
         background: "hsl(var(--background))",
@@ -78,9 +78,8 @@ const config: Config = {
         "brand-accent": "hsl(var(--brand-accent))",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "Josefin Sans", "Roboto", ...fontFamily.sans],
-        display: ["var(--font-display)", "Josefin Sans", ...fontFamily.sans],
-        serif: ["var(--font-serif)", "Roboto Slab", ...fontFamily.serif],
+        sans: ["var(--font-sans)", "Montserrat", ...fontFamily.sans],
+        display: ["var(--font-display)", "Syne", ...fontFamily.sans],
       },
       borderRadius: {
         ...defaultTheme.borderRadius,
@@ -109,4 +108,3 @@ const config: Config = {
 };
 
 export default config;
-

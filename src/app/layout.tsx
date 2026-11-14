@@ -6,8 +6,8 @@ import { Toaster } from "@src/components/ui/sonner";
 import DefaultLayout from "@src/layouts/DefaultLayout";
 
 export const metadata: Metadata = {
-  title: "Wiz Ofuasia",
-  description: "src/app/layout.tsx",
+  title: "Wiz Ofuasia — Official Website",
+  description: "Wiz Ofuasia official music website.",
 };
 
 export const viewport: Viewport = {
@@ -19,11 +19,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning className="font-sans antialiased">
-      <body className="min-h-screen bg-background text-foreground transition-colors duration-200">
+      <body className="min-h-screen bg-[#222222] text-white transition-colors duration-200">
         <DefaultLayout>{children}</DefaultLayout>
         <Toaster position="bottom-right" richColors />
       </body>
     </html>
   );
 }
-

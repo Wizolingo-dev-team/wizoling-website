@@ -10,6 +10,10 @@ export const NAV_LINKS: NavLinkItem[] = [
     label: "Songs",
   },
   {
+    href: "/videos",
+    label: "Videos",
+  },
+  {
     href: "/events",
     label: "Events",
   },
@@ -25,14 +29,6 @@ export const NAV_LINKS: NavLinkItem[] = [
     href: "/news",
     label: "News",
   },
-  {
-    href: "/podcast",
-    label: "Podcast",
-  },
-  {
-    href: "/booking",
-    label: "Booking",
-  },
 ];
 
 export const FOOTER_SECTIONS: FooterSection[] = [
@@ -41,18 +37,16 @@ export const FOOTER_SECTIONS: FooterSection[] = [
     links: [
       { href: "/", label: "Home" },
       { href: "/songs", label: "Songs" },
+      { href: "/videos", label: "Videos" },
       { href: "/events", label: "Events" },
-      { href: "/gallery", label: "Gallery" },
     ],
   },
   {
     title: "Artist",
     links: [
+      { href: "/gallery", label: "Gallery" },
       { href: "/biography", label: "Biography" },
       { href: "/news", label: "News" },
-      { href: "/podcast", label: "Podcast" },
-      { href: "/booking", label: "Booking" },
     ],
   },
 ];
-
