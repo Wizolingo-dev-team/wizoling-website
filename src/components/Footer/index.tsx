@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowUp, Youtube, Instagram, Disc3, Twitter } from "lucide-react";
+import { toast } from "sonner";
+import { ArrowUp, ArrowRight, Youtube, Instagram, Disc3, Twitter } from "lucide-react";
+import { subscribeToNewsletter } from "@src/utils/subscribeNewsletter";
 
 const FOOTER_SOCIALS = [
   {
@@ -29,6 +31,8 @@ const FOOTER_SOCIALS = [
 
 export default function Footer() {
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [email, setEmail] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -42,9 +46,26 @@ export default function Footer() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleNewsletterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const trimmed = email.trim();
+    if (!trimmed) return;
+
+    setSubmitting(true);
+    try {
+      await subscribeToNewsletter(trimmed);
+      toast.success("Thank you for subscribing to Wiz Ofuasia's newsletter!");
+      setEmail("");
+    } catch {
+      toast.error("Subscription failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <footer className="relative z-10 border-t border-white/10 bg-[#0A0A0A] text-white">
-      <div className="mx-auto max-w-[1240px] px-4 py-14 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1240px] px-4 py-14 sm:px-6 lg:px-8 space-y-12">
         {/* Centered Social Row (Micdrop style) */}
         <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-14 lg:gap-20">
           {FOOTER_SOCIALS.map((item) => {
@@ -64,8 +85,40 @@ export default function Footer() {
           })}
         </div>
 
+        {/* Footer Newsletter Form */}
+        <div className="mx-auto max-w-lg border-t border-white/10 pt-10 text-center space-y-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#D70E1D]">
+            Stay Updated
+          </p>
+          <h3 className="font-display text-lg sm:text-xl font-extrabold uppercase tracking-wide text-white">
+            SUBSCRIBE TO THE NEWSLETTER
+          </h3>
+          <form
+            onSubmit={handleNewsletterSubmit}
+            className="flex flex-col sm:flex-row items-stretch gap-2.5 pt-1"
+          >
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              aria-label="Newsletter email address"
+              className="flex-1 border border-white/20 bg-white/[0.04] px-4 py-3 text-xs text-white placeholder:text-white/45 focus:border-[#D70E1D] focus:outline-none"
+            />
+            <button
+              type="submit"
+              disabled={submitting}
+              className="inline-flex items-center justify-center gap-2 bg-[#D70E1D] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white transition-colors hover:bg-white hover:text-[#111111] disabled:opacity-60 shrink-0"
+            >
+              <span>{submitting ? "SENDING..." : "SUBSCRIBE"}</span>
+              <ArrowRight className="size-3.5" />
+            </button>
+          </form>
+        </div>
+
         {/* Centered Copyright */}
-        <div className="mt-10 text-center text-[11px] tracking-wide text-white/55">
+        <div className="text-center text-[11px] tracking-wide text-white/55">
           &copy; {new Date().getFullYear()} Wiz Ofuasia, All Rights Reserved
         </div>
       </div>

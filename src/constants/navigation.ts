@@ -29,6 +29,10 @@ export const NAV_LINKS: NavLinkItem[] = [
     href: "/news",
     label: "News",
   },
+  {
+    href: "https://stan.store/Wiz_Ofuasi",
+    label: "Store",
+  },
 ];
 
 export const FOOTER_SECTIONS: FooterSection[] = [

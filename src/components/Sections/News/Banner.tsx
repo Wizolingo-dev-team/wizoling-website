@@ -1,15 +1,21 @@
 import React from "react";
+import Breadcrumb from "@src/components/Breadcrumb";
 
 export default function NewsBanner() {
   return (
-    <section className="border-b border-white/10 pt-28 pb-14 lg:pt-36 lg:pb-16">
-      <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-8">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.25em] text-[#D70E1D]">
-          src/components/Sections/News/Banner.tsx
-        </p>
-        <h1 className="mt-2 font-display text-4xl sm:text-5xl font-extrabold uppercase tracking-wide text-white">
-          NEWS
-        </h1>
+    <section className="border-b border-white/10 pt-24 pb-10 sm:pt-28 sm:pb-12 lg:pt-36 lg:pb-14">
+      <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-10 space-y-4">
+        <Breadcrumb
+          items={[{ label: "Home", href: "/" }, { label: "News" }]}
+        />
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#D70E1D]">
+            Editorial &amp; Press
+          </p>
+          <h1 className="mt-2 font-display text-[clamp(2rem,5vw,3.75rem)] font-extrabold uppercase tracking-wide text-white break-words">
+            NEWS &amp; ARTICLES
+          </h1>
+        </div>
       </div>
     </section>
   );

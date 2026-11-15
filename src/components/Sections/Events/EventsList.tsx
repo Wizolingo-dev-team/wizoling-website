@@ -14,7 +14,6 @@ import {
 import {
   ALL_EVENTS,
   LIVE_PERFORMANCE_VIDEOS,
-  EUROPE_TOUR_HIGHLIGHTS,
 } from "@src/constants/events";
 import { cn } from "@src/lib/utils";
 import BookingModal from "@src/components/BookingModal";
@@ -239,18 +238,6 @@ export default function EventsList() {
                 </motion.div>
               );
             })}
-          </div>
-
-          {/* Europe Tour Highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-            {EUROPE_TOUR_HIGHLIGHTS.map((item) => (
-              <div
-                key={item}
-                className="border border-white/10 bg-white/[0.03] px-5 py-4 text-xs font-medium tracking-wide text-white/80"
-              >
-                {item}
-              </div>
-            ))}
           </div>
         </section>
       </div>

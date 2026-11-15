@@ -31,8 +31,8 @@ export const PAGE_BACKGROUNDS: Record<string, PageBackgroundOverlayProps> = {
     grayscale: true,
   },
   "/news": {
-    imageSrc: "/images/gallery/wizolingo1.jpg",
-    position: "center 18%",
+    imageSrc: "/images/gallery/wiz-ofuasia-web.jpg",
+    position: "center 20%",
     grayscale: true,
   },
 };
@@ -42,6 +42,9 @@ export function getPageBackground(
 ): PageBackgroundOverlayProps | null {
   if (NO_IMAGE_OVERLAY_ROUTES.includes(pathname)) {
     return null;
+  }
+  if (pathname.startsWith("/news")) {
+    return PAGE_BACKGROUNDS["/news"] ?? DEFAULT_PAGE_BACKGROUND;
   }
   return PAGE_BACKGROUNDS[pathname] ?? DEFAULT_PAGE_BACKGROUND;
 }

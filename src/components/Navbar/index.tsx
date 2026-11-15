@@ -181,6 +181,8 @@ export default function Navbar() {
                   ) : (
                     <Link
                       href={link.href}
+                      target={link.href.startsWith("http") ? "_blank" : undefined}
+                      rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                       className={cn(
                         "relative py-1 text-[11px] font-medium uppercase tracking-[0.2em] transition-colors",
                         isActive
@@ -265,8 +267,18 @@ export default function Navbar() {
                     </SheetTitle>
                     <SheetDescription className="space-y-1.5 text-xs leading-relaxed text-white/75">
                       <span className="block">Management &amp; Bookings</span>
-                      <span className="block">booking@wizofuasia.com</span>
-                      <span className="block">+234 000 000 0000</span>
+                      <a
+                        href="mailto:wizofuasia@gmail.com"
+                        className="block transition-colors hover:text-[#D70E1D]"
+                      >
+                        wizofuasia@gmail.com
+                      </a>
+                      <a
+                        href="tel:+18324255604"
+                        className="block transition-colors hover:text-[#D70E1D]"
+                      >
+                        +1 8324255604
+                      </a>
                     </SheetDescription>
 
                     <div className="flex items-center justify-center gap-4 pt-2">
@@ -276,7 +288,10 @@ export default function Navbar() {
                           <Link
                             key={item.label}
                             href={item.href}
+                            target={item.external ? "_blank" : undefined}
+                            rel={item.external ? "noopener noreferrer" : undefined}
                             aria-label={item.label}
+                            title={item.label}
                             className="text-white/75 hover:text-[#D70E1D] transition-colors"
                           >
                             <Icon className="size-4" />
@@ -433,6 +448,8 @@ export default function Navbar() {
                       <Link
                         key={link.label}
                         href={link.href}
+                        target={link.href.startsWith("http") ? "_blank" : undefined}
+                        rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                         onClick={() => setIsOpen(false)}
                         className={cn(
                           "flex items-center justify-between rounded-xl px-4 py-3 text-base font-medium transition-colors",

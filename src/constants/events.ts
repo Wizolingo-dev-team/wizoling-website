@@ -121,9 +121,3 @@ export const LIVE_PERFORMANCE_VIDEOS: LivePerformanceVideo[] = [
   },
 ];
 
-export const EUROPE_TOUR_HIGHLIGHTS = [
-  "Wiz Ofuasia live in Nurnberg, Germany (Europe Tour 2018)",
-  "Wiz Ofuasia live in Amsterdam (Europe Tour 2016)",
-  "Wiz Ofuasia live in Linz, Austria (Europe Tour 2016)",
-];
-

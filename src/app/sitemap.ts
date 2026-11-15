@@ -1,11 +1,12 @@
 import type { MetadataRoute } from "next";
+import { NEWS_POSTS } from "@src/constants/news";
 
 const SITE_URL = "https://www.wizofuasia.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  return [
+  const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
       lastModified: now,
@@ -46,8 +47,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${SITE_URL}/news`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.75,
+      priority: 0.8,
     },
   ];
-}
 
+  const newsRoutes: MetadataRoute.Sitemap = NEWS_POSTS.map((post) => ({
+    url: `${SITE_URL}/news/${post.slug}`,
+    lastModified: new Date(post.isoDate),
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...newsRoutes];
+}

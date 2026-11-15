@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import MotionSection from "@src/components/MotionSection";
 import NewsBanner from "./Banner";
 import NewsArticlesList from "./ArticlesList";
@@ -10,7 +10,9 @@ export default function NewsSections() {
         <NewsBanner />
       </MotionSection>
       <MotionSection delay={0.1}>
-        <NewsArticlesList />
+        <Suspense fallback={<div className="py-20" />}>
+          <NewsArticlesList />
+        </Suspense>
       </MotionSection>
     </div>
   );

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { MotionConfig } from "framer-motion";
 import Navbar from "@src/components/Navbar";
 import Footer from "@src/components/Footer";
+import NewsletterPopup from "@src/components/NewsletterPopup";
 import PageBackgroundOverlay from "@src/components/PageBackgroundOverlay";
 import { getPageBackground } from "@src/constants/pageBackgrounds";
 
@@ -25,6 +26,7 @@ export default function DefaultLayout({ children }: { children: ReactNode }) {
         <MotionConfig reducedMotion="user">{children}</MotionConfig>
       </main>
       {showFooter && <Footer />}
+      <NewsletterPopup />
     </div>
   );
 }
