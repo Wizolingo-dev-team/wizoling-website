@@ -273,12 +273,6 @@ export default function Navbar() {
                       >
                         wizofuasia@gmail.com
                       </a>
-                      <a
-                        href="tel:+18324255604"
-                        className="block transition-colors hover:text-[#D70E1D]"
-                      >
-                        +1 8324255604
-                      </a>
                     </SheetDescription>
 
                     <div className="flex items-center justify-center gap-4 pt-2">
