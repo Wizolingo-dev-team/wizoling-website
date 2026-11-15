@@ -6,7 +6,7 @@ import BiographyDiscography from "./Discography";
 
 export default function BiographySections() {
   return (
-    <div className="space-y-0 pb-20">
+    <div className="min-h-screen bg-[#111111] space-y-0 pb-16">
       <MotionSection>
         <BiographyBanner />
       </MotionSection>

@@ -6,8 +6,8 @@ export const DEFAULT_PAGE_BACKGROUND: PageBackgroundOverlayProps = {
   grayscale: true,
 };
 
-// Routes that use their own video background instead of static image overlay
-export const NO_IMAGE_OVERLAY_ROUTES = ["/videos"];
+// Routes that use their own background (video or solid) instead of static image overlay
+export const NO_IMAGE_OVERLAY_ROUTES = ["/videos", "/biography"];
 
 export const PAGE_BACKGROUNDS: Record<string, PageBackgroundOverlayProps> = {
   "/": {
@@ -26,11 +26,6 @@ export const PAGE_BACKGROUNDS: Record<string, PageBackgroundOverlayProps> = {
     grayscale: true,
   },
   "/gallery": {
-    imageSrc: "/images/gallery/wizolingo1.jpg",
-    position: "center 18%",
-    grayscale: true,
-  },
-  "/biography": {
     imageSrc: "/images/gallery/wizolingo1.jpg",
     position: "center 18%",
     grayscale: true,
