@@ -10,21 +10,21 @@ const PLACEHOLDER_POSTS = [
     date: "2026",
     title: "Latest Update Title 01",
     href: "/news",
-    image: "/images/wizolingo6.JPG",
+    image: "/images/gallery/wizolingo6.jpg",
   },
   {
     tag: "BIOGRAPHY",
     date: "STORY",
     title: "Artist Biography & Journey",
     href: "/biography",
-    image: "/images/wizolingo7.JPG",
+    image: "/images/gallery/wizolingo7.jpg",
   },
   {
     tag: "VIDEOS",
     date: "WATCH",
     title: "Music Videos & Sessions",
     href: "/videos",
-    image: "/images/wizolingo8.JPG",
+    image: "/images/gallery/wizolingo8.jpg",
   },
 ];
 

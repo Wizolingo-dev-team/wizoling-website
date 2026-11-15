@@ -6,10 +6,10 @@ import Image from "next/image";
 import { Play, X } from "lucide-react";
 
 const GALLERY_THUMBS = [
-  { src: "/images/wizolingo2.JPG", alt: "Wiz Ofuasia gallery 1" },
-  { src: "/images/wizolingo3.JPG", alt: "Wiz Ofuasia gallery 2" },
-  { src: "/images/wizolingo4.JPG", alt: "Wiz Ofuasia gallery 3" },
-  { src: "/images/wizolingo5.JPG", alt: "Wiz Ofuasia gallery 4" },
+  { src: "/images/gallery/wizolingo2.jpg", alt: "Wiz Ofuasia gallery 1" },
+  { src: "/images/gallery/wizolingo3.jpg", alt: "Wiz Ofuasia gallery 2" },
+  { src: "/images/gallery/wizolingo4.jpg", alt: "Wiz Ofuasia gallery 3" },
+  { src: "/images/gallery/wizolingo5.jpg", alt: "Wiz Ofuasia gallery 4" },
 ];
 
 export default function HomeGalleryPreview() {
@@ -40,7 +40,7 @@ export default function HomeGalleryPreview() {
           {!isVideoOpen ? (
             <>
               <Image
-                src="/images/wiz_event.JPG"
+                src="/images/gallery/wiz_event.jpg"
                 alt="WIZBOYY - Gimme Ur Love (Official Video)"
                 fill
                 className="object-cover object-[center_36%] opacity-85 transition-transform duration-700 group-hover:scale-105"

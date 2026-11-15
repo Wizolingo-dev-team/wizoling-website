@@ -1,7 +1,7 @@
 import type { PageBackgroundOverlayProps } from "@src/components/PageBackgroundOverlay";
 
 export const DEFAULT_PAGE_BACKGROUND: PageBackgroundOverlayProps = {
-  imageSrc: "/images/wizolingo1.JPG",
+  imageSrc: "/images/gallery/wizolingo1.jpg",
   position: "center 18%",
   grayscale: true,
 };
@@ -11,32 +11,32 @@ export const NO_IMAGE_OVERLAY_ROUTES = ["/videos"];
 
 export const PAGE_BACKGROUNDS: Record<string, PageBackgroundOverlayProps> = {
   "/": {
-    imageSrc: "/images/wizolingo1.JPG",
+    imageSrc: "/images/gallery/wizolingo1.jpg",
     position: "center 18%",
     grayscale: true,
   },
   "/songs": {
-    imageSrc: "/images/wiz_event-scaled.png",
+    imageSrc: "/images/gallery/wiz_event-scaled.jpg",
     position: "center 36%",
     grayscale: true,
   },
   "/events": {
-    imageSrc: "/images/wizolingo4.JPG",
+    imageSrc: "/images/gallery/wizolingo4.jpg",
     position: "center 20%",
     grayscale: true,
   },
   "/gallery": {
-    imageSrc: "/images/wizolingo1.JPG",
+    imageSrc: "/images/gallery/wizolingo1.jpg",
     position: "center 18%",
     grayscale: true,
   },
   "/biography": {
-    imageSrc: "/images/wizolingo1.JPG",
+    imageSrc: "/images/gallery/wizolingo1.jpg",
     position: "center 18%",
     grayscale: true,
   },
   "/news": {
-    imageSrc: "/images/wizolingo1.JPG",
+    imageSrc: "/images/gallery/wizolingo1.jpg",
     position: "center 18%",
     grayscale: true,
   },

@@ -24,7 +24,7 @@ export const HOME_UPCOMING_TOURS: EventItem[] = [
     venue: "Safari Lux Lounge",
     location: "Charlotte, NC",
     status: "SOLD OUT",
-    flyerUrl: "/images/1.png",
+    flyerUrl: "/images/events/1.jpg",
     description:
       "Wiz Ofuasia (Wizboyy) live in concert at Safari Lux Lounge, 5020 E Independence Blvd, Charlotte, NC. Music by DJ Beezy.",
   },
@@ -35,7 +35,7 @@ export const HOME_UPCOMING_TOURS: EventItem[] = [
     venue: "VIP Lounge",
     location: "Hyattsville, MD",
     status: "SOLD OUT",
-    flyerUrl: "/images/2-1272.png",
+    flyerUrl: "/images/events/2-1272.jpg",
     description:
       "Memorial Day Weekend special live performance by Wiz Ofuasia (Wizboyy) at VIP Lounge, 5365 Jackson St, Hyattsville, MD.",
   },
@@ -46,7 +46,7 @@ export const HOME_UPCOMING_TOURS: EventItem[] = [
     venue: "New Karibean City",
     location: "Oakland, CA",
     status: "SOLD OUT",
-    flyerUrl: "/images/3.png",
+    flyerUrl: "/images/events/3.jpg",
     description:
       "Sky Concept presents Wizboyy (Wiz Ofuasia) Live in Oakland at New Karibean City, 1408 Webster St, Oakland, CA.",
   },
@@ -61,7 +61,7 @@ export const ALL_EVENTS: EventItem[] = [
     venue: "Cameroon Tour",
     location: "Cameroon",
     status: "PAST SHOW",
-    flyerUrl: "/images/cameroon-event--2022-wiz-ofuasia.png",
+    flyerUrl: "/images/events/cameroon-event--2022-wiz-ofuasia.jpg",
     description:
       "Wiz Ofuasia (Wizboyy) headlining live in Cameroon — Afrobeats & Highlife showcase.",
   },
@@ -72,7 +72,7 @@ export const ALL_EVENTS: EventItem[] = [
     venue: "USA Tour Dates",
     location: "United States",
     status: "PAST TOUR",
-    flyerUrl: "/images/afrocentric-tour-feb-2022-wiz-ofuasia.png",
+    flyerUrl: "/images/events/afrocentric-tour-feb-2022-wiz-ofuasia.jpg",
     description:
       "Wiz Ofuasia Afrocentric Tour — February 2022 live tour series across major US cities.",
   },
@@ -83,7 +83,7 @@ export const ALL_EVENTS: EventItem[] = [
     venue: "Jackson St. Showcase",
     location: "United States",
     status: "PAST SHOW",
-    flyerUrl: "/images/wiz-ofuasia-live-in-jackson-st--may-2022.png",
+    flyerUrl: "/images/events/wiz-ofuasia-live-in-jackson-st--may-2022.jpg",
     description:
       "Wiz Ofuasia live performance at Jackson St. — May 2022 special edition.",
   },
@@ -94,7 +94,7 @@ export const ALL_EVENTS: EventItem[] = [
     venue: "Special Appearance",
     location: "International",
     status: "ARCHIVE",
-    flyerUrl: "/images/1-1241.png",
+    flyerUrl: "/images/events/1-1241.jpg",
     description:
       "Official event flyer and live concert appearance by Wiz Ofuasia (Wizboyy).",
   },
