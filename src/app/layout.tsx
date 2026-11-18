@@ -5,6 +5,7 @@ import "@src/styles/globals.css";
 import { type ReactNode } from "react";
 import { Toaster } from "@src/components/ui/sonner";
 import DefaultLayout from "@src/layouts/DefaultLayout";
+import QueryProvider from "@src/providers/QueryProvider";
 
 const SITE_URL = "https://www.wizofuasia.com";
 
@@ -138,7 +139,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <DefaultLayout>{children}</DefaultLayout>
+        <QueryProvider>
+          <DefaultLayout>{children}</DefaultLayout>
+        </QueryProvider>
         <Toaster position="bottom-right" richColors />
         <Script
           src="https://sync-bot-server.onrender.com/api/flow/embed/Wiz%20Ofuasia"
