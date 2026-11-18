@@ -28,6 +28,9 @@ import {
   SheetTrigger,
 } from "@src/components/ui/sheet";
 import BookingModal from "@src/components/BookingModal";
+import CartDrawer from "@src/components/CartDrawer";
+import UserMenu from "@src/components/Navbar/UserMenu";
+import { isWhiteBackgroundRoute } from "@src/constants/pageBackgrounds";
 import { cn } from "@src/lib/utils";
 
 const SOCIAL_LINKS = [
@@ -61,6 +64,7 @@ const SOCIAL_LINKS = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const isWhiteBg = isWhiteBackgroundRoute(pathname);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -121,8 +125,8 @@ export default function Navbar() {
       <header
         className={cn(
           "fixed top-0 inset-x-0 z-50 w-full transition-all duration-300",
-          scrolled
-            ? "border-b border-white/10 bg-[#222222]/90 backdrop-blur-md shadow-xl text-white"
+          scrolled || isWhiteBg
+            ? "border-b border-white/10 bg-[#141414]/95 backdrop-blur-md shadow-xl text-white"
             : "border-none bg-transparent text-white"
         )}
       >
@@ -227,25 +231,11 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Right: Social Icons when unscrolled -> 2-line Hamburger + shadcn Slide-In Sheet when scrolled */}
-          <div className="hidden lg:flex items-center justify-end min-w-[160px] shrink-0">
-            {!scrolled ? (
-              <div className="flex items-center gap-3.5">
-                {SOCIAL_LINKS.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <Link
-                      key={item.label}
-                      href={item.href}
-                      aria-label={item.label}
-                      className="text-white/80 hover:text-[#D70E1D] transition-colors"
-                    >
-                      <Icon className="size-4" />
-                    </Link>
-                  );
-                })}
-              </div>
-            ) : (
+          {/* Right: Cart Drawer + Login/Avatar -> + Hamburger Slide-In Sheet when scrolled */}
+          <div className="hidden lg:flex items-center justify-end gap-4 min-w-[160px] shrink-0">
+            <CartDrawer />
+            <UserMenu />
+            {scrolled && (
               <Sheet>
                 <SheetTrigger asChild>
                   <button
@@ -312,13 +302,15 @@ export default function Navbar() {
             )}
           </div>
 
-          {/* Mobile Top Right: Bookings Modal Trigger */}
-          <div className="flex items-center gap-2 lg:hidden">
+          {/* Mobile Top Right: Cart Drawer, User/Login & Bookings Modal Trigger */}
+          <div className="flex items-center gap-2.5 lg:hidden">
+            <CartDrawer />
+            <UserMenu />
             <BookingModal
               trigger={
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center bg-[#D70E1D] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#B50B18]"
+                  className="inline-flex items-center justify-center bg-[#D70E1D] px-3.5 py-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#B50B18]"
                 >
                   Bookings
                 </button>

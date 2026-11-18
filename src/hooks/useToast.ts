@@ -1,20 +1,20 @@
 "use client";
 
-import { toast, type ExternalToast } from "sonner";
+import type { ExternalToast } from "sonner";
+import { appToast } from "@src/components/Toast";
 
 export function useToast() {
   return {
     success: (message: string, options?: ExternalToast) =>
-      toast.success(message, options),
+      appToast.success(message, options),
 
     error: (message: string, options?: ExternalToast) =>
-      toast.error(message, options),
+      appToast.error(message, options),
 
     info: (message: string, options?: ExternalToast) =>
-      toast(message, options),
+      appToast.info(message, options),
 
     warning: (message: string, options?: ExternalToast) =>
-      toast.warning(message, options),
+      appToast.warning(message, options),
   };
 }
-

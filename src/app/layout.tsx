@@ -3,7 +3,7 @@ import Script from "next/script";
 import "@src/styles/fonts.css";
 import "@src/styles/globals.css";
 import { type ReactNode } from "react";
-import { Toaster } from "@src/components/ui/sonner";
+import { AppToaster } from "@src/components/Toast";
 import DefaultLayout from "@src/layouts/DefaultLayout";
 import QueryProvider from "@src/providers/QueryProvider";
 
@@ -142,7 +142,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         <QueryProvider>
           <DefaultLayout>{children}</DefaultLayout>
         </QueryProvider>
-        <Toaster position="bottom-right" richColors />
+        <AppToaster />
         <Script
           src="https://sync-bot-server.onrender.com/api/flow/embed/Wiz%20Ofuasia"
           strategy="afterInteractive"

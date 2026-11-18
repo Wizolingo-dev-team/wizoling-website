@@ -4,6 +4,7 @@ import type {
   DigitalDownloadData,
   GetAllProductsParams,
   Product,
+  ProductFilterOptions,
 } from "@src/types/productManagement";
 
 const BASE_URL = "/products";
@@ -14,6 +15,14 @@ export const productService = {
       `${BASE_URL}/get-all-products`,
       "Failed to fetch products",
       { params }
+    );
+  },
+
+  getFilterOptions: async (productType?: string) => {
+    return apiClient.get<ApiDataResponse<ProductFilterOptions>>(
+      `${BASE_URL}/filter-options`,
+      "Failed to fetch store filter options",
+      { params: productType && productType !== "all" ? { productType } : undefined }
     );
   },
 

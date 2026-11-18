@@ -65,6 +65,18 @@ export type GetAllProductsParams = {
   category?: string;
   featured?: boolean;
   search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  color?: string;
+  size?: string;
+  sort?: string;
+};
+
+export type ProductFilterOptions = {
+  minPrice: number;
+  maxPrice: number;
+  colors: string[];
+  sizes: string[];
 };
 
 export type DigitalDownloadData = {

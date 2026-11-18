@@ -15,6 +15,16 @@ export const useGetAllProducts = (params?: GetAllProductsParams) => {
   });
 };
 
+export const useGetProductFilterOptions = (productType?: string) => {
+  return useQuery({
+    queryKey: ["productFilterOptions", productType ?? "all"],
+    queryFn: async () => {
+      const response = await productService.getFilterOptions(productType);
+      return response.data;
+    },
+  });
+};
+
 export const useGetProductById = (id: string) => {
   return useQuery({
     queryKey: ["product", id],

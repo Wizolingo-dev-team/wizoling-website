@@ -52,6 +52,9 @@ export const HOME_UPCOMING_TOURS: EventItem[] = [
   },
 ];
 
+/*
+ * Static ALL_EVENTS commented out — /events now consumes live events from
+ * wizolingo-server (/api/events/get-all-events).
 export const ALL_EVENTS: EventItem[] = [
   ...HOME_UPCOMING_TOURS,
   {
@@ -99,6 +102,7 @@ export const ALL_EVENTS: EventItem[] = [
       "Official event flyer and live concert appearance by Wiz Ofuasia (Wizboyy).",
   },
 ];
+*/
 
 export const LIVE_PERFORMANCE_VIDEOS: LivePerformanceVideo[] = [
   {

@@ -30,7 +30,7 @@ export const NAV_LINKS: NavLinkItem[] = [
     label: "News",
   },
   {
-    href: "https://stan.store/Wiz_Ofuasi",
+    href: "/shop",
     label: "Store",
   },
 ];

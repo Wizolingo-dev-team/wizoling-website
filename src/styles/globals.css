@@ -66,3 +66,15 @@
     font-weight: 800;
   }
 }
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (max-width: 1023px) {
+  #sync-bot-container {
+    bottom: 88px !important;
+  }
+}

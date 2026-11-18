@@ -57,7 +57,7 @@ export const useResendOtp = () => {
   });
 };
 
-export const useCustomerLogin = () => {
+export const useCustomerLogin = (redirectTo = "/shop") => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -79,7 +79,7 @@ export const useCustomerLogin = () => {
         setAuthToken(response.data);
         queryClient.invalidateQueries({ queryKey: ["loggedInUser"] });
         toast.success(response.message || "Welcome back!");
-        router.push("/store");
+        router.push(redirectTo);
       }
     },
     onError: (error: Error) => {

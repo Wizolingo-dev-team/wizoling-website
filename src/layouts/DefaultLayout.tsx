@@ -7,17 +7,27 @@ import Navbar from "@src/components/Navbar";
 import Footer from "@src/components/Footer";
 import NewsletterPopup from "@src/components/NewsletterPopup";
 import PageBackgroundOverlay from "@src/components/PageBackgroundOverlay";
-import { getPageBackground } from "@src/constants/pageBackgrounds";
+import {
+  getPageBackground,
+  isWhiteBackgroundRoute,
+} from "@src/constants/pageBackgrounds";
+import { cn } from "@src/lib/utils";
 
 const NO_FOOTER_ROUTES = ["/biography"];
 
 export default function DefaultLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const background = getPageBackground(pathname);
+  const isWhiteBg = isWhiteBackgroundRoute(pathname);
   const showFooter = !NO_FOOTER_ROUTES.includes(pathname);
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-transparent text-white pb-20 lg:pb-0 selection:bg-[#D70E1D] selection:text-white">
+    <div
+      className={cn(
+        "relative flex min-h-screen flex-col overflow-x-clip pb-20 lg:pb-0 selection:bg-[#D70E1D] selection:text-white",
+        isWhiteBg ? "bg-white text-[#111111]" : "bg-transparent text-white"
+      )}
+    >
       {/* Reusable, Dynamic Fixed Background Image Overlay per Route */}
       {background && <PageBackgroundOverlay {...background} />}
 
