@@ -89,7 +89,7 @@ export default function RegisterForm() {
       imageAlt="Wiz Ofuasia Studio Portrait"
       quote="Experience Official Wiz Ofuasia Merch & Music."
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form noValidate onSubmit={handleSubmit} className="space-y-4">
         {/* Avatar Upload */}
         <div className="flex items-center gap-4 pb-2">
           <label

@@ -50,7 +50,7 @@ export default function LoginForm() {
       imageAlt="Wiz Ofuasia (Wizboyy)"
       quote="Afrobeats. Highlife. A Legacy of Sound."
     >
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form noValidate onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-2">
           <label
             htmlFor="login-email"

@@ -190,7 +190,7 @@ export default function TicketPurchaseModal({
             </p>
           </div>
         ) : (
-          <form onSubmit={handlePurchase} className="space-y-5 pt-2">
+          <form noValidate onSubmit={handlePurchase} className="space-y-5 pt-2">
             {/* Ticket Tiers */}
             <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
               {activeTiers.map((tier) => {

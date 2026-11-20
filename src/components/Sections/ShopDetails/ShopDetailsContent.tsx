@@ -556,6 +556,7 @@ export default function ShopDetailsContent({
                 )}
 
                 <form
+                  noValidate
                   onSubmit={handleReviewSubmit}
                   className="border-t border-neutral-200 pt-6 space-y-4 max-w-xl"
                 >

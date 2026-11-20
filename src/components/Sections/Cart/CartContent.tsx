@@ -263,6 +263,7 @@ export default function CartContent() {
 
               {/* Coupon Bar */}
               <form
+                noValidate
                 onSubmit={handleApplyCoupon}
                 className="flex flex-col sm:flex-row gap-3 border border-neutral-200 bg-white p-5"
               >

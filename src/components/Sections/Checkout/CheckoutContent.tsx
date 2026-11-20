@@ -193,6 +193,7 @@ export default function CheckoutContent() {
           />
         ) : (
           <form
+            noValidate
             onSubmit={handlePlaceOrder}
             className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start"
           >

@@ -15,6 +15,7 @@ import {
   isNewsletterSubscribed,
   subscribeToNewsletter,
 } from "@src/utils/subscribeNewsletter";
+import { subscribeNewsletterSchema } from "@src/validations/newsletterManagement";
 
 export default function NewsletterPopup() {
   const [open, setOpen] = useState(false);
@@ -41,17 +42,23 @@ export default function NewsletterPopup() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const trimmed = email.trim();
-    if (!trimmed) return;
 
     setSubmitting(true);
     try {
-      await subscribeToNewsletter(trimmed);
+      const validated = await subscribeNewsletterSchema.validate(
+        { email, source: "popup" },
+        { abortEarly: true }
+      );
+      await subscribeToNewsletter(validated.email);
       toast.success("Welcome to Wiz Ofuasia's inner circle! You're subscribed.");
       setEmail("");
       setOpen(false);
-    } catch {
-      toast.error("Something went wrong. Please try again.");
+    } catch (err) {
+      if (err instanceof Error && err.name === "ValidationError") {
+        toast.error(err.message);
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -92,7 +99,7 @@ export default function NewsletterPopup() {
               </DialogDescription>
             </DialogHeader>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form noValidate onSubmit={handleSubmit} className="space-y-3">
               <input
                 type="email"
                 required

@@ -60,7 +60,7 @@ export default function VerifyEmailForm() {
       title="VERIFY EMAIL"
       subtitle="Enter the verification OTP sent to your email address to activate your Wizolingo account."
     >
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form noValidate onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-2">
           <label
             htmlFor="verify-email"

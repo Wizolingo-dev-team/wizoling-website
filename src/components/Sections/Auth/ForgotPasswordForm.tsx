@@ -35,7 +35,7 @@ export default function ForgotPasswordForm() {
       title="FORGOT PASSWORD"
       subtitle="Lost your password? Enter your account email and we will send you a password reset link."
     >
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form noValidate onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-2">
           <label
             htmlFor="forgot-email"

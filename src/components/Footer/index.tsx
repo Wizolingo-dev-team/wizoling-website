@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { ArrowUp, ArrowRight, Youtube, Instagram, Disc3, Twitter } from "lucide-react";
 import { subscribeToNewsletter } from "@src/utils/subscribeNewsletter";
+import { subscribeNewsletterSchema } from "@src/validations/newsletterManagement";
 
 const FOOTER_SOCIALS = [
   {
@@ -48,16 +49,22 @@ export default function Footer() {
 
   const handleNewsletterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const trimmed = email.trim();
-    if (!trimmed) return;
 
     setSubmitting(true);
     try {
-      await subscribeToNewsletter(trimmed);
+      const validated = await subscribeNewsletterSchema.validate(
+        { email, source: "footer" },
+        { abortEarly: true }
+      );
+      await subscribeToNewsletter(validated.email);
       toast.success("Thank you for subscribing to Wiz Ofuasia's newsletter!");
       setEmail("");
-    } catch {
-      toast.error("Subscription failed. Please try again.");
+    } catch (err) {
+      if (err instanceof Error && err.name === "ValidationError") {
+        toast.error(err.message);
+      } else {
+        toast.error("Subscription failed. Please try again.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -94,6 +101,7 @@ export default function Footer() {
             SUBSCRIBE TO THE NEWSLETTER
           </h3>
           <form
+            noValidate
             onSubmit={handleNewsletterSubmit}
             className="flex flex-col sm:flex-row items-stretch gap-2.5 pt-1"
           >

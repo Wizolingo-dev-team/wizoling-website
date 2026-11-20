@@ -59,6 +59,7 @@ export default function ChangePasswordForm() {
 
   return (
     <form
+      noValidate
       onSubmit={handleUpdate}
       className="flex flex-col gap-8 py-8 md:flex-row"
     >

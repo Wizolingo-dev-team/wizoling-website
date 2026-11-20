@@ -48,6 +48,7 @@ export default function ProfileForm({ user }: { user: User | null | undefined })
 
   return (
     <form
+      noValidate
       onSubmit={handleSubmit}
       className="flex flex-col gap-8 border-b border-neutral-200 py-8 md:flex-row"
     >

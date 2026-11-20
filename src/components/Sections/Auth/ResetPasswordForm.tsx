@@ -52,7 +52,7 @@ export default function ResetPasswordForm({
       title="RESET PASSWORD"
       subtitle="Choose a new password (minimum 6 characters) for your Wizolingo account."
     >
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form noValidate onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-2">
           <label
             htmlFor="reset-password"
