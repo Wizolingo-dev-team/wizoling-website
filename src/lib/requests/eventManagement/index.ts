@@ -49,4 +49,11 @@ export const eventService = {
       "Failed to fetch your event tickets"
     );
   },
+
+  verifyTicketByCode: async (ticketCode: string) => {
+    return apiClient.get<ApiDataResponse<TicketOrder>>(
+      `${BASE_URL}/verify-ticket/${encodeURIComponent(ticketCode)}`,
+      "Failed to verify ticket"
+    );
+  },
 };

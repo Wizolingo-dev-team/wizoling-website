@@ -5,6 +5,7 @@ import { Search, Download, Ticket, Disc3 } from "lucide-react";
 import { DataTable } from "@src/components/Tables";
 import { getOrderColumns } from "@src/components/Tables/columns/OrderColumns";
 import OrderListSkeleton from "@src/components/Skeletons/OrderListSkeleton";
+import TicketPassCard from "@src/components/TicketPassCard";
 import {
   useGetMyDownloads,
   useGetUserOrders,
@@ -174,31 +175,10 @@ export default function OrderHistoryList() {
               My Event Tickets
             </h3>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {tickets.map((tkt) => {
-              const eventTitle =
-                typeof tkt.event === "string"
-                  ? "Wiz Ofuasia Live Event"
-                  : tkt.event.title;
-              return (
-                <div
-                  key={tkt._id}
-                  className="flex items-center justify-between gap-4 border border-neutral-200 bg-neutral-50 p-4"
-                >
-                  <div className="min-w-0 space-y-1">
-                    <p className="truncate font-display text-xs font-bold uppercase text-[#111111]">
-                      {eventTitle}
-                    </p>
-                    <p className="text-[11px] font-bold text-[#D70E1D]">
-                      Code: {tkt.ticketCode}
-                    </p>
-                  </div>
-                  <span className="border border-neutral-200 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[#111111]">
-                    {tkt.status}
-                  </span>
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {tickets.map((tkt) => (
+              <TicketPassCard key={tkt._id} ticket={tkt} />
+            ))}
           </div>
         </div>
       )}

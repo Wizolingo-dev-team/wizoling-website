@@ -97,7 +97,21 @@ export default function EventsList() {
             {displayedEvents.map((ev, idx) => {
               const flyerSrc =
                 ev.flyerUrl || "/images/gallery/wiz_event-scaled.jpg";
-              const subtitle = [ev.venue, ev.time || ev.dateLabel]
+              const formattedShowTimes =
+                ev.showTimes && ev.showTimes.length > 0
+                  ? ev.showTimes
+                      .map((st) =>
+                        [
+                          st.label ? `${st.label}:` : "",
+                          st.time,
+                          st.timezone,
+                        ]
+                          .filter(Boolean)
+                          .join(" ")
+                      )
+                      .join(" • ")
+                  : ev.time;
+              const subtitle = [ev.venue, formattedShowTimes || ev.dateLabel]
                 .filter(Boolean)
                 .join(" / ");
 

@@ -6,6 +6,8 @@ import { toast } from "sonner";
 import { ArrowUp, ArrowRight, Youtube, Instagram, Disc3, Twitter } from "lucide-react";
 import { subscribeToNewsletter } from "@src/utils/subscribeNewsletter";
 import { subscribeNewsletterSchema } from "@src/validations/newsletterManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 
 const FOOTER_SOCIALS = [
   {
@@ -34,6 +36,7 @@ export default function Footer() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   useEffect(() => {
     const onScroll = () => {
@@ -49,22 +52,26 @@ export default function Footer() {
 
   const handleNewsletterSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    const result = await validateWithSchema(subscribeNewsletterSchema, {
+      email,
+      source: "footer",
+    });
+    if (!result.success) {
+      setEmailError(result.errors.email ?? "Please provide a valid email address");
+      return;
+    }
+    setEmailError("");
     setSubmitting(true);
     try {
-      const validated = await subscribeNewsletterSchema.validate(
-        { email, source: "footer" },
-        { abortEarly: true }
+      const res = await subscribeToNewsletter(result.data.email, "footer");
+      toast.success(
+        res?.message || "Thank you for subscribing to Wiz Ofuasia's newsletter!"
       );
-      await subscribeToNewsletter(validated.email);
-      toast.success("Thank you for subscribing to Wiz Ofuasia's newsletter!");
       setEmail("");
     } catch (err) {
-      if (err instanceof Error && err.name === "ValidationError") {
-        toast.error(err.message);
-      } else {
-        toast.error("Subscription failed. Please try again.");
-      }
+      const message =
+        err instanceof Error ? err.message : "Subscription failed. Please try again.";
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -103,25 +110,33 @@ export default function Footer() {
           <form
             noValidate
             onSubmit={handleNewsletterSubmit}
-            className="flex flex-col sm:flex-row items-stretch gap-2.5 pt-1"
+            className="space-y-1.5 pt-1"
           >
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address"
-              aria-label="Newsletter email address"
-              className="flex-1 border border-white/20 bg-white/[0.04] px-4 py-3 text-xs text-white placeholder:text-white/45 focus:border-[#D70E1D] focus:outline-none"
-            />
-            <button
-              type="submit"
-              disabled={submitting}
-              className="inline-flex items-center justify-center gap-2 bg-[#D70E1D] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white transition-colors hover:bg-white hover:text-[#111111] disabled:opacity-60 shrink-0"
-            >
-              <span>{submitting ? "SENDING..." : "SUBSCRIBE"}</span>
-              <ArrowRight className="size-3.5" />
-            </button>
+            <div className="flex flex-col sm:flex-row items-stretch gap-2.5">
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (emailError) setEmailError("");
+                }}
+                placeholder="Enter your email address"
+                aria-label="Newsletter email address"
+                className={`flex-1 border bg-white/[0.04] px-4 py-3 text-xs text-white placeholder:text-white/45 focus:border-[#D70E1D] focus:outline-none ${
+                  emailError ? "border-[#D70E1D]" : "border-white/20"
+                }`}
+              />
+              <button
+                type="submit"
+                disabled={submitting}
+                className="inline-flex items-center justify-center gap-2 bg-[#D70E1D] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.22em] text-white transition-colors hover:bg-white hover:text-[#111111] disabled:opacity-60 shrink-0"
+              >
+                <span>{submitting ? "SENDING..." : "SUBSCRIBE"}</span>
+                <ArrowRight className="size-3.5" />
+              </button>
+            </div>
+            <FieldError message={emailError} />
           </form>
         </div>
 

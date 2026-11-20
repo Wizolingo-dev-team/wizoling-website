@@ -54,9 +54,24 @@ export default function EventDetailsContent({
   const fallbackMapQuery = encodeURIComponent(
     `${event.venue}, ${event.location}`
   );
-  const resolvedMapSrc =
-    event.mapEmbedUrl ||
-    `https://maps.google.com/maps?q=${fallbackMapQuery}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+  const fallbackEmbedUrl = `https://maps.google.com/maps?q=${fallbackMapQuery}&t=&z=14&ie=UTF8&iwloc=&output=embed`;
+
+  const rawMapInput = (event.mapEmbedUrl || "").trim();
+  const extractedSrcMatch = rawMapInput.match(/src=["']([^"']+)["']/i);
+  const normalizedMapInput = (extractedSrcMatch?.[1] ?? rawMapInput).trim();
+
+  const isEmbeddableGoogleUrl =
+    normalizedMapInput.includes("/maps/embed") ||
+    normalizedMapInput.includes("output=embed");
+
+  const resolvedMapSrc = isEmbeddableGoogleUrl
+    ? normalizedMapInput
+    : fallbackEmbedUrl;
+
+  const externalMapLink =
+    normalizedMapInput && !isEmbeddableGoogleUrl
+      ? normalizedMapInput
+      : `https://www.google.com/maps/search/?api=1&query=${fallbackMapQuery}`;
 
   const shareUrl =
     event.shareUrl ||
@@ -97,7 +112,7 @@ export default function EventDetailsContent({
             </div>
           </div>
 
-          <div className="lg:col-span-8 min-h-[360px] lg:min-h-full overflow-hidden border border-white/15 bg-[#141414]">
+          <div className="relative lg:col-span-8 min-h-[360px] lg:min-h-full overflow-hidden border border-white/15 bg-[#141414]">
             <iframe
               title={`${event.title} location map`}
               src={resolvedMapSrc}
@@ -106,6 +121,14 @@ export default function EventDetailsContent({
               className="h-full min-h-[360px] w-full border-0 grayscale contrast-125"
               allowFullScreen
             />
+            <a
+              href={externalMapLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute bottom-3 right-3 bg-[#141414]/90 hover:bg-[#D70E1D] text-white border border-white/20 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors"
+            >
+              Open in Google Maps &rarr;
+            </a>
           </div>
         </div>
 
@@ -125,11 +148,23 @@ export default function EventDetailsContent({
                 </dd>
               </div>
 
-              {event.time && (
+              {((event.showTimes && event.showTimes.length > 0) ||
+                event.time) && (
                 <div className="flex flex-wrap gap-1.5">
                   <dt className="font-bold text-white/60">Time:</dt>
-                  <dd className="font-bold uppercase tracking-wider text-white">
-                    {event.time}
+                  <dd className="font-bold uppercase tracking-wider text-white flex flex-wrap gap-x-2 gap-y-1">
+                    {event.showTimes && event.showTimes.length > 0 ? (
+                      event.showTimes.map((st, idx) => (
+                        <span key={st._id || idx}>
+                          {st.label ? `${st.label}: ` : ""}
+                          {st.time}
+                          {st.timezone ? ` ${st.timezone}` : ""}
+                          {idx < event.showTimes!.length - 1 ? " •" : ""}
+                        </span>
+                      ))
+                    ) : (
+                      <span>{event.time}</span>
+                    )}
                   </dd>
                 </div>
               )}
@@ -196,21 +231,64 @@ export default function EventDetailsContent({
                   LINEUP &amp; STAGE TIMES
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {event.artists.map((artist) => (
-                    <div
-                      key={artist._id}
-                      className="border border-white/15 bg-black/40 p-4 space-y-1"
-                    >
-                      <p className="font-display text-xs font-bold uppercase tracking-wide text-white">
-                        {artist.name}
-                      </p>
-                      <p className="text-[11px] text-white/60">
-                        {[artist.stage, artist.performanceTime]
-                          .filter(Boolean)
-                          .join(" / ")}
-                      </p>
-                    </div>
-                  ))}
+                  {event.artists.map((artist) => {
+                    const artistTimes =
+                      artist.showTimes && artist.showTimes.length > 0
+                        ? artist.showTimes
+                        : artist.performanceTime
+                        ? [
+                            {
+                              time: artist.performanceTime,
+                              timezone: artist.timezone || "",
+                              label: "",
+                            },
+                          ]
+                        : [];
+                    return (
+                      <div
+                        key={artist._id}
+                        className="border border-white/15 bg-black/40 p-4 space-y-2.5"
+                      >
+                        <div className="flex items-center gap-3">
+                          {artist.imageUrl ? (
+                            <img
+                              src={artist.imageUrl}
+                              alt={artist.name}
+                              className="size-12 rounded-full object-cover border border-white/20 shrink-0"
+                            />
+                          ) : (
+                            <div className="size-12 rounded-full border border-white/15 bg-white/5 flex items-center justify-center shrink-0 font-display text-xs font-extrabold uppercase text-white/60">
+                              {artist.name?.charAt(0) || "A"}
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            <p className="font-display text-xs font-bold uppercase tracking-wide text-white truncate">
+                              {artist.name}
+                            </p>
+                            {artist.stage && (
+                              <p className="text-[11px] font-semibold uppercase tracking-wider text-white/60 truncate">
+                                {artist.stage}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        {artistTimes.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 pt-0.5">
+                            {artistTimes.map((st, idx) => (
+                              <span
+                                key={st._id || idx}
+                                className="inline-block border border-white/15 bg-white/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white/85"
+                              >
+                                {st.label ? `${st.label}: ` : ""}
+                                {st.time}
+                                {st.timezone ? ` ${st.timezone}` : ""}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -1,5 +1,6 @@
 import React, { type ReactNode } from "react";
 import Breadcrumb from "@src/components/Breadcrumb";
+import GuestGuard from "@src/components/Sections/Auth/GuestGuard";
 
 type AuthSingleShellProps = {
   breadcrumbLabel: string;
@@ -17,7 +18,8 @@ export default function AuthSingleShell({
   children,
 }: AuthSingleShellProps) {
   return (
-    <div className="pt-24 pb-20 sm:pt-28 lg:pt-36 bg-white text-[#111111]">
+    <GuestGuard>
+      <div className="pt-24 pb-20 sm:pt-28 lg:pt-36 bg-white text-[#111111]">
       <div className="mx-auto max-w-[1280px] px-4 sm:px-6 lg:px-10 space-y-10">
         <Breadcrumb
           variant="light"
@@ -39,5 +41,6 @@ export default function AuthSingleShell({
         </div>
       </div>
     </div>
+    </GuestGuard>
   );
 }

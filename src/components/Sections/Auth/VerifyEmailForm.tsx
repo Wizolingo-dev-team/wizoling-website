@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ShieldCheck, RefreshCw, Loader2 } from "lucide-react";
@@ -8,49 +8,96 @@ import {
   useResendOtp,
   useVerifyCustomerOtp,
 } from "@src/hooks/authManagement";
-import { useToast } from "@src/hooks/useToast";
 import {
   resendOtpSchema,
   verifyOtpSchema,
 } from "@src/validations/authManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 import AuthSingleShell from "@src/components/Sections/Auth/AuthSingleShell";
+
+const OTP_LENGTH = 6;
 
 export default function VerifyEmailForm() {
   const searchParams = useSearchParams();
-  const toast = useToast();
-  const [email, setEmail] = useState(searchParams.get("email") ?? "");
-  const [otp, setOtp] = useState("");
+  const email = searchParams.get("email") ?? "";
+  const [otpDigits, setOtpDigits] = useState<string[]>(
+    Array.from({ length: OTP_LENGTH }, () => "")
+  );
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const { mutate: verifyOtp, isPending: verifying } = useVerifyCustomerOtp();
   const { mutate: resendOtp, isPending: resending } = useResendOtp();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    try {
-      const validated = await verifyOtpSchema.validate(
-        { email, otp },
-        { abortEarly: true }
-      );
-      verifyOtp({ email: validated.email, otp: validated.otp });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+  const otp = otpDigits.join("");
+
+  const handleDigitChange = (index: number, rawValue: string) => {
+    const digit = rawValue.replace(/\D/g, "").slice(-1);
+    setOtpDigits((prev) => {
+      const next = [...prev];
+      next[index] = digit;
+      return next;
+    });
+    if (fieldErrors.otp) {
+      setFieldErrors((prev) => ({ ...prev, otp: "" }));
+    }
+    if (digit && index < OTP_LENGTH - 1) {
+      inputRefs.current[index + 1]?.focus();
     }
   };
 
-  const handleResend = async () => {
-    try {
-      const validated = await resendOtpSchema.validate(
-        { email },
-        { abortEarly: true }
-      );
-      resendOtp({ email: validated.email });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+  const handleDigitKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Backspace" && !otpDigits[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < OTP_LENGTH - 1) {
+      inputRefs.current[index + 1]?.focus();
     }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, OTP_LENGTH);
+    if (!pasted) return;
+    const nextDigits = Array.from(
+      { length: OTP_LENGTH },
+      (_, idx) => pasted[idx] ?? ""
+    );
+    setOtpDigits(nextDigits);
+    if (fieldErrors.otp) {
+      setFieldErrors((prev) => ({ ...prev, otp: "" }));
+    }
+    const focusIndex = Math.min(pasted.length, OTP_LENGTH - 1);
+    inputRefs.current[focusIndex]?.focus();
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const result = await validateWithSchema(verifyOtpSchema, { email, otp });
+    if (!result.success) {
+      setFieldErrors(result.errors);
+      return;
+    }
+    setFieldErrors({});
+    verifyOtp({ email: result.data.email, otp: result.data.otp });
+  };
+
+  const handleResend = async () => {
+    const result = await validateWithSchema(resendOtpSchema, { email });
+    if (!result.success) {
+      setFieldErrors((prev) => ({ ...prev, ...result.errors }));
+      return;
+    }
+    setFieldErrors({});
+    resendOtp({ email: result.data.email });
   };
 
   return (
@@ -58,43 +105,46 @@ export default function VerifyEmailForm() {
       breadcrumbLabel="Verify Email"
       eyebrow="Account Verification"
       title="VERIFY EMAIL"
-      subtitle="Enter the verification OTP sent to your email address to activate your Wizolingo account."
+      subtitle={
+        email
+          ? `Enter the 6-digit verification OTP sent to ${email} to activate your Wizolingo account.`
+          : "Enter the 6-digit verification OTP sent to your email address to activate your Wizolingo account."
+      }
     >
       <form noValidate onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-2">
           <label
-            htmlFor="verify-email"
-            className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-700"
-          >
-            Email Address *
-          </label>
-          <input
-            id="verify-email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com"
-            className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label
-            htmlFor="verify-otp"
+            htmlFor="verify-otp-0"
             className="block text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-700"
           >
             Verification OTP *
           </label>
-          <input
-            id="verify-otp"
-            type="text"
-            required
-            value={otp}
-            onChange={(e) => setOtp(e.target.value)}
-            placeholder="Enter 6-digit OTP"
-            className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-center font-display text-lg tracking-[0.35em] text-[#111111] placeholder:text-xs placeholder:tracking-normal placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
-          />
+          <div className="grid grid-cols-6 gap-2 sm:gap-3">
+            {otpDigits.map((digit, index) => (
+              <input
+                key={index}
+                id={`verify-otp-${index}`}
+                ref={(el) => {
+                  inputRefs.current[index] = el;
+                }}
+                type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                autoComplete={index === 0 ? "one-time-code" : "off"}
+                maxLength={1}
+                aria-label={`OTP digit ${index + 1}`}
+                value={digit}
+                onChange={(e) => handleDigitChange(index, e.target.value)}
+                onKeyDown={(e) => handleDigitKeyDown(index, e)}
+                onPaste={handlePaste}
+                className={`h-12 sm:h-14 w-full border bg-neutral-50 text-center font-display text-lg sm:text-xl font-bold text-[#111111] focus:border-[#D70E1D] focus:bg-white focus:outline-none ${
+                  fieldErrors.otp ? "border-[#D70E1D]" : "border-neutral-300"
+                }`}
+              />
+            ))}
+          </div>
+          <FieldError message={fieldErrors.otp} />
+          <FieldError message={fieldErrors.email} />
         </div>
 
         <button

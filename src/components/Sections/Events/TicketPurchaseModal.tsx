@@ -21,6 +21,9 @@ import { useGetLoggedInUser } from "@src/hooks/authManagement";
 import { usePurchaseTicket } from "@src/hooks/eventManagement";
 import { useToast } from "@src/hooks/useToast";
 import { getAuthToken } from "@src/utils/auth";
+import { purchaseTicketSchema } from "@src/validations/eventManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 import type { EventItem, TicketOrder } from "@src/types/eventManagement";
 
 type TicketPurchaseModalProps = {
@@ -46,6 +49,13 @@ export default function TicketPurchaseModal({
   const [confirmedTicket, setConfirmedTicket] = useState<TicketOrder | null>(
     null
   );
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const clearError = (field: string) => {
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -95,7 +105,7 @@ export default function TicketPurchaseModal({
     }));
   };
 
-  const handlePurchase = (e: React.FormEvent<HTMLFormElement>) => {
+  const handlePurchase = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!getAuthToken()) {
@@ -112,25 +122,25 @@ export default function TicketPurchaseModal({
       }))
       .filter((item) => item.quantity > 0);
 
-    if (selectedTickets.length === 0) {
-      toast.error("Please select at least one ticket.");
+    const result = await validateWithSchema(purchaseTicketSchema, {
+      eventId: event._id,
+      tickets: selectedTickets,
+      attendeeName: attendeeName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+    });
+
+    if (!result.success) {
+      setFieldErrors(result.errors);
       return;
     }
+    setFieldErrors({});
 
-    purchaseTicket(
-      {
-        eventId: event._id,
-        tickets: selectedTickets,
-        attendeeName: attendeeName.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
+    purchaseTicket(result.data, {
+      onSuccess: (res) => {
+        setConfirmedTicket(res.data.ticketOrder);
       },
-      {
-        onSuccess: (res) => {
-          setConfirmedTicket(res.data.ticketOrder);
-        },
-      }
-    );
+    });
   };
 
   return (
@@ -258,31 +268,59 @@ export default function TicketPurchaseModal({
               })}
             </div>
 
+            <FieldError message={fieldErrors.tickets} />
+
             {/* Attendee Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-white/10 pt-4">
-              <input
-                type="text"
-                required
-                value={attendeeName}
-                onChange={(e) => setAttendeeName(e.target.value)}
-                placeholder="Attendee Full Name *"
-                className="w-full border border-white/20 bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/40 focus:border-[#D70E1D] focus:outline-none"
-              />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email Address *"
-                className="w-full border border-white/20 bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/40 focus:border-[#D70E1D] focus:outline-none"
-              />
-              <input
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="Phone Number (Optional)"
-                className="sm:col-span-2 w-full border border-white/20 bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/40 focus:border-[#D70E1D] focus:outline-none"
-              />
+              <div className="space-y-1">
+                <input
+                  type="text"
+                  required
+                  value={attendeeName}
+                  onChange={(e) => {
+                    setAttendeeName(e.target.value);
+                    clearError("attendeeName");
+                  }}
+                  placeholder="Attendee Full Name *"
+                  className={`w-full border bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/40 focus:border-[#D70E1D] focus:outline-none ${
+                    fieldErrors.attendeeName
+                      ? "border-[#D70E1D]"
+                      : "border-white/20"
+                  }`}
+                />
+                <FieldError message={fieldErrors.attendeeName} />
+              </div>
+              <div className="space-y-1">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    clearError("email");
+                  }}
+                  placeholder="Email Address *"
+                  className={`w-full border bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/40 focus:border-[#D70E1D] focus:outline-none ${
+                    fieldErrors.email ? "border-[#D70E1D]" : "border-white/20"
+                  }`}
+                />
+                <FieldError message={fieldErrors.email} />
+              </div>
+              <div className="sm:col-span-2 space-y-1">
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    clearError("phone");
+                  }}
+                  placeholder="Phone Number (Optional)"
+                  className={`w-full border bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/40 focus:border-[#D70E1D] focus:outline-none ${
+                    fieldErrors.phone ? "border-[#D70E1D]" : "border-white/20"
+                  }`}
+                />
+                <FieldError message={fieldErrors.phone} />
+              </div>
             </div>
 
             {/* Total & Submit */}

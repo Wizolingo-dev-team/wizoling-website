@@ -16,11 +16,14 @@ import {
   subscribeToNewsletter,
 } from "@src/utils/subscribeNewsletter";
 import { subscribeNewsletterSchema } from "@src/validations/newsletterManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 
 export default function NewsletterPopup() {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [emailError, setEmailError] = useState("");
 
   useEffect(() => {
     if (isNewsletterSubscribed()) {
@@ -42,23 +45,27 @@ export default function NewsletterPopup() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    const result = await validateWithSchema(subscribeNewsletterSchema, {
+      email,
+      source: "popup",
+    });
+    if (!result.success) {
+      setEmailError(result.errors.email ?? "Please provide a valid email address");
+      return;
+    }
+    setEmailError("");
     setSubmitting(true);
     try {
-      const validated = await subscribeNewsletterSchema.validate(
-        { email, source: "popup" },
-        { abortEarly: true }
+      const res = await subscribeToNewsletter(result.data.email, "popup");
+      toast.success(
+        res?.message || "Welcome to Wiz Ofuasia's inner circle! You're subscribed."
       );
-      await subscribeToNewsletter(validated.email);
-      toast.success("Welcome to Wiz Ofuasia's inner circle! You're subscribed.");
       setEmail("");
       setOpen(false);
     } catch (err) {
-      if (err instanceof Error && err.name === "ValidationError") {
-        toast.error(err.message);
-      } else {
-        toast.error("Something went wrong. Please try again.");
-      }
+      const message =
+        err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -100,15 +107,23 @@ export default function NewsletterPopup() {
             </DialogHeader>
 
             <form noValidate onSubmit={handleSubmit} className="space-y-3">
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address"
-                aria-label="Email address"
-                className="w-full border border-white/20 bg-white/[0.04] px-4 py-3 text-xs text-white placeholder:text-white/45 focus:border-[#D70E1D] focus:outline-none"
-              />
+              <div className="space-y-1.5">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailError) setEmailError("");
+                  }}
+                  placeholder="Enter your email address"
+                  aria-label="Email address"
+                  className={`w-full border bg-white/[0.04] px-4 py-3 text-xs text-white placeholder:text-white/45 focus:border-[#D70E1D] focus:outline-none ${
+                    emailError ? "border-[#D70E1D]" : "border-white/20"
+                  }`}
+                />
+                <FieldError message={emailError} />
+              </div>
               <button
                 type="submit"
                 disabled={submitting}

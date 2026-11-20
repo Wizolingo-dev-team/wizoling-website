@@ -2,18 +2,19 @@
 
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { useToast } from "@src/hooks/useToast";
 import { useChangePassword } from "@src/hooks/profileManagement";
 import { changePasswordSchema } from "@src/validations/profileManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 
 export default function ChangePasswordForm() {
-  const toast = useToast();
   const { mutate: changePassword, isPending } = useChangePassword();
   const [passwords, setPasswords] = useState({
     current: "",
     new: "",
     confirm: "",
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const [showPasswords, setShowPasswords] = useState({
     current: false,
@@ -28,33 +29,35 @@ export default function ChangePasswordForm() {
     }));
   };
 
+  const clearError = (field: string) => {
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
   const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const validated = await changePasswordSchema.validate(
-        {
-          currentPassword: passwords.current,
-          newPassword: passwords.new,
-          confirmPassword: passwords.confirm,
-        },
-        { abortEarly: true }
-      );
-      changePassword(
-        {
-          currentPassword: validated.currentPassword,
-          newPassword: validated.newPassword,
-        },
-        {
-          onSuccess: () => {
-            setPasswords({ current: "", new: "", confirm: "" });
-          },
-        }
-      );
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+    const result = await validateWithSchema(changePasswordSchema, {
+      currentPassword: passwords.current,
+      newPassword: passwords.new,
+      confirmPassword: passwords.confirm,
+    });
+    if (!result.success) {
+      setFieldErrors(result.errors);
+      return;
     }
+    setFieldErrors({});
+    changePassword(
+      {
+        currentPassword: result.data.currentPassword,
+        newPassword: result.data.newPassword,
+      },
+      {
+        onSuccess: () => {
+          setPasswords({ current: "", new: "", confirm: "" });
+        },
+      }
+    );
   };
 
   return (
@@ -87,10 +90,15 @@ export default function ChangePasswordForm() {
               type={showPasswords.current ? "text" : "password"}
               required
               value={passwords.current}
-              onChange={(e) =>
-                setPasswords({ ...passwords, current: e.target.value })
-              }
-              className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 pr-11 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none"
+              onChange={(e) => {
+                setPasswords({ ...passwords, current: e.target.value });
+                clearError("currentPassword");
+              }}
+              className={`w-full border bg-neutral-50 px-4 py-3 pr-11 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.currentPassword
+                  ? "border-[#D70E1D]"
+                  : "border-neutral-300"
+              }`}
             />
             <button
               type="button"
@@ -105,6 +113,7 @@ export default function ChangePasswordForm() {
               )}
             </button>
           </div>
+          <FieldError message={fieldErrors.currentPassword} />
         </div>
 
         {/* New Password */}
@@ -122,10 +131,15 @@ export default function ChangePasswordForm() {
               required
               minLength={6}
               value={passwords.new}
-              onChange={(e) =>
-                setPasswords({ ...passwords, new: e.target.value })
-              }
-              className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 pr-11 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none"
+              onChange={(e) => {
+                setPasswords({ ...passwords, new: e.target.value });
+                clearError("newPassword");
+              }}
+              className={`w-full border bg-neutral-50 px-4 py-3 pr-11 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.newPassword
+                  ? "border-[#D70E1D]"
+                  : "border-neutral-300"
+              }`}
             />
             <button
               type="button"
@@ -140,6 +154,7 @@ export default function ChangePasswordForm() {
               )}
             </button>
           </div>
+          <FieldError message={fieldErrors.newPassword} />
         </div>
 
         {/* Confirm Password */}
@@ -157,10 +172,15 @@ export default function ChangePasswordForm() {
               required
               minLength={6}
               value={passwords.confirm}
-              onChange={(e) =>
-                setPasswords({ ...passwords, confirm: e.target.value })
-              }
-              className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 pr-11 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none"
+              onChange={(e) => {
+                setPasswords({ ...passwords, confirm: e.target.value });
+                clearError("confirmPassword");
+              }}
+              className={`w-full border bg-neutral-50 px-4 py-3 pr-11 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.confirmPassword
+                  ? "border-[#D70E1D]"
+                  : "border-neutral-300"
+              }`}
             />
             <button
               type="button"
@@ -175,6 +195,7 @@ export default function ChangePasswordForm() {
               )}
             </button>
           </div>
+          <FieldError message={fieldErrors.confirmPassword} />
         </div>
 
         <button

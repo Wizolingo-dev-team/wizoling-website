@@ -79,3 +79,15 @@ export const useGetMyTickets = () => {
     enabled: Boolean(getAuthToken()),
   });
 };
+
+export const useVerifyTicket = (ticketCode: string) => {
+  return useQuery({
+    queryKey: ["verifyTicket", ticketCode],
+    queryFn: async () => {
+      const response = await eventService.verifyTicketByCode(ticketCode);
+      return response.data;
+    },
+    enabled: Boolean(ticketCode),
+    retry: false,
+  });
+};

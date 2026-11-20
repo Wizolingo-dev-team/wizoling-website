@@ -32,6 +32,8 @@ import { useCart } from "@src/hooks/useCart";
 import { useToast } from "@src/hooks/useToast";
 import { getAuthToken } from "@src/utils/auth";
 import { addReviewSchema } from "@src/validations/reviewManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 import { cn } from "@src/lib/utils";
 
 type TabKey = "description" | "details" | "reviews";
@@ -60,6 +62,7 @@ export default function ShopDetailsContent({
   );
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<TabKey>("description");
+  const [reviewError, setReviewError] = useState("");
 
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
@@ -131,22 +134,27 @@ export default function ShopDetailsContent({
       router.push(`/login?redirect=/shop/${product._id}`);
       return;
     }
-    try {
-      const validated = await addReviewSchema.validate(
-        { productId: product._id, rating, review: reviewText },
-        { abortEarly: true }
+    const result = await validateWithSchema(addReviewSchema, {
+      productId: product._id,
+      rating,
+      review: reviewText,
+    });
+    if (!result.success) {
+      setReviewError(
+        result.errors.review ??
+          result.errors.rating ??
+          result.errors._form ??
+          "Please enter your review"
       );
-      addReview(validated, {
-        onSuccess: () => {
-          setReviewText("");
-          setRating(5);
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+      return;
     }
+    setReviewError("");
+    addReview(result.data, {
+      onSuccess: () => {
+        setReviewText("");
+        setRating(5);
+      },
+    });
   };
 
   return (
@@ -579,13 +587,21 @@ export default function ShopDetailsContent({
                       </button>
                     ))}
                   </div>
-                  <textarea
-                    rows={3}
-                    value={reviewText}
-                    onChange={(e) => setReviewText(e.target.value)}
-                    placeholder="Share your thoughts on this product..."
-                    className="w-full border border-neutral-300 bg-neutral-50 p-3 text-xs text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
-                  />
+                  <div className="space-y-1.5">
+                    <textarea
+                      rows={3}
+                      value={reviewText}
+                      onChange={(e) => {
+                        setReviewText(e.target.value);
+                        if (reviewError) setReviewError("");
+                      }}
+                      placeholder="Share your thoughts on this product..."
+                      className={`w-full border bg-neutral-50 p-3 text-xs text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                        reviewError ? "border-[#D70E1D]" : "border-neutral-300"
+                      }`}
+                    />
+                    <FieldError message={reviewError} />
+                  </div>
                   <button
                     type="submit"
                     disabled={submittingReview}

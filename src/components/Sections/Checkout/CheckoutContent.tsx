@@ -20,6 +20,8 @@ import { useCreateOrder } from "@src/hooks/orderManagement";
 import { useToast } from "@src/hooks/useToast";
 import { getAuthToken } from "@src/utils/auth";
 import { createOrderSchema } from "@src/validations/orderManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 import type { Order } from "@src/types/orderManagement";
 
 export default function CheckoutContent() {
@@ -48,6 +50,13 @@ export default function CheckoutContent() {
   const [country, setCountry] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [additionalInfo, setAdditionalInfo] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const clearError = (field: string) => {
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -98,24 +107,23 @@ export default function CheckoutContent() {
       additionalInfo: additionalInfo.trim() || undefined,
     };
 
-    try {
-      await createOrderSchema.validate(payloadCandidate, { abortEarly: true });
-      const { includesMerch: _omit, ...orderPayload } = payloadCandidate;
-      void _omit;
-
-      createOrder(orderPayload, {
-        onSuccess: (res) => {
-          if (res.data) {
-            setConfirmedOrder(res.data);
-          }
-          clearCart();
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+    const result = await validateWithSchema(createOrderSchema, payloadCandidate);
+    if (!result.success) {
+      setFieldErrors(result.errors);
+      return;
     }
+    setFieldErrors({});
+    const { includesMerch: _omit, ...orderPayload } = payloadCandidate;
+    void _omit;
+
+    createOrder(orderPayload, {
+      onSuccess: (res) => {
+        if (res.data) {
+          setConfirmedOrder(res.data);
+        }
+        clearCart();
+      },
+    });
   };
 
   return (
@@ -233,10 +241,18 @@ export default function CheckoutContent() {
                     type="email"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      clearError("email");
+                    }}
                     placeholder="you@example.com"
-                    className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+                    className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                      fieldErrors.email
+                        ? "border-[#D70E1D]"
+                        : "border-neutral-300"
+                    }`}
                   />
+                  <FieldError message={fieldErrors.email} />
                 </div>
 
                 {includesMerch && (
@@ -253,10 +269,18 @@ export default function CheckoutContent() {
                         type="tel"
                         required
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => {
+                          setPhone(e.target.value);
+                          clearError("phone");
+                        }}
                         placeholder="+1 234 567 8900"
-                        className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+                        className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                          fieldErrors.phone
+                            ? "border-[#D70E1D]"
+                            : "border-neutral-300"
+                        }`}
                       />
+                      <FieldError message={fieldErrors.phone} />
                     </div>
 
                     <div className="space-y-1.5">
@@ -271,10 +295,18 @@ export default function CheckoutContent() {
                         type="text"
                         required
                         value={country}
-                        onChange={(e) => setCountry(e.target.value)}
+                        onChange={(e) => {
+                          setCountry(e.target.value);
+                          clearError("country");
+                        }}
                         placeholder="United States / Nigeria / UK"
-                        className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+                        className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                          fieldErrors.country
+                            ? "border-[#D70E1D]"
+                            : "border-neutral-300"
+                        }`}
                       />
+                      <FieldError message={fieldErrors.country} />
                     </div>
 
                     <div className="space-y-1.5 sm:col-span-2">
@@ -289,10 +321,18 @@ export default function CheckoutContent() {
                         type="text"
                         required
                         value={address}
-                        onChange={(e) => setAddress(e.target.value)}
+                        onChange={(e) => {
+                          setAddress(e.target.value);
+                          clearError("address");
+                        }}
                         placeholder="House number and street name"
-                        className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+                        className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                          fieldErrors.address
+                            ? "border-[#D70E1D]"
+                            : "border-neutral-300"
+                        }`}
                       />
+                      <FieldError message={fieldErrors.address} />
                     </div>
 
                     <div className="space-y-1.5">
@@ -307,10 +347,18 @@ export default function CheckoutContent() {
                         type="text"
                         required
                         value={city}
-                        onChange={(e) => setCity(e.target.value)}
+                        onChange={(e) => {
+                          setCity(e.target.value);
+                          clearError("city");
+                        }}
                         placeholder="City"
-                        className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+                        className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                          fieldErrors.city
+                            ? "border-[#D70E1D]"
+                            : "border-neutral-300"
+                        }`}
                       />
+                      <FieldError message={fieldErrors.city} />
                     </div>
 
                     <div className="space-y-1.5">

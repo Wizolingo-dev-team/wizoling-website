@@ -1,11 +1,6 @@
-const SUBSCRIBED_KEY = "wiz_newsletter_subscribed";
+import { apiClient } from "@src/lib/apiClient";
 
-// Set NEXT_PUBLIC_MAILCHIMP_ACTION_URL and NEXT_PUBLIC_MAILCHIMP_HONEYPOT in .env.local
-// once Wiz Ofuasia's Mailchimp embed script is ready.
-const MAILCHIMP_ACTION_URL =
-  process.env.NEXT_PUBLIC_MAILCHIMP_ACTION_URL ?? "";
-const MAILCHIMP_HONEYPOT =
-  process.env.NEXT_PUBLIC_MAILCHIMP_HONEYPOT ?? "";
+const SUBSCRIBED_KEY = "wiz_newsletter_subscribed";
 
 export const isNewsletterSubscribed = (): boolean => {
   if (typeof window === "undefined") return false;
@@ -26,25 +21,19 @@ export const markNewsletterSubscribed = (): void => {
 };
 
 /**
- * Submits an email address to Wiz Ofuasia's Mailchimp Newsletter Audience
- * using the same FormData + no-cors pattern as diaspora-cupid-connect-client.
+ * Submits an email address to the backend newsletter endpoint (/api/newsletter/subscribe).
  */
-export const subscribeToNewsletter = async (email: string): Promise<boolean> => {
-  if (MAILCHIMP_ACTION_URL) {
-    const formData = new FormData();
-    formData.append("EMAIL", email);
-    if (MAILCHIMP_HONEYPOT) {
-      // Mailchimp anti-bot field
-      formData.append(MAILCHIMP_HONEYPOT, "");
-    }
-
-    await fetch(MAILCHIMP_ACTION_URL, {
-      method: "POST",
-      mode: "no-cors",
-      body: formData,
-    });
-  }
+export const subscribeToNewsletter = async (
+  email: string,
+  source: "popup" | "footer" | "checkout" | "website" = "website",
+  name?: string
+): Promise<{ success: boolean; message?: string }> => {
+  const response = await apiClient.post<{ success: boolean; message?: string }>(
+    "/newsletter/subscribe",
+    { email, source, name },
+    "Failed to subscribe to newsletter"
+  );
 
   markNewsletterSubscribed();
-  return true;
+  return response;
 };

@@ -23,6 +23,8 @@ import { usePurchaseTicket } from "@src/hooks/eventManagement";
 import { useToast } from "@src/hooks/useToast";
 import { getAuthToken } from "@src/utils/auth";
 import { purchaseTicketSchema } from "@src/validations/eventManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 import type { EventItem, TicketOrder } from "@src/types/eventManagement";
 
 type TicketPurchaseModalProps = {
@@ -42,6 +44,13 @@ export default function TicketPurchaseModal({
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [createdOrder, setCreatedOrder] = useState<TicketOrder | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const clearError = (field: string) => {
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
 
   const { data: user } = useGetLoggedInUser();
   const { mutate: purchaseTicket, isPending } = usePurchaseTicket();
@@ -123,20 +132,20 @@ export default function TicketPurchaseModal({
       phone: phone.trim(),
     };
 
-    try {
-      const validated = await purchaseTicketSchema.validate(payloadCandidate, {
-        abortEarly: true,
-      });
-      purchaseTicket(validated, {
-        onSuccess: (res) => {
-          setCreatedOrder(res.data.ticketOrder);
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+    const result = await validateWithSchema(
+      purchaseTicketSchema,
+      payloadCandidate
+    );
+    if (!result.success) {
+      setFieldErrors(result.errors);
+      return;
     }
+    setFieldErrors({});
+    purchaseTicket(result.data, {
+      onSuccess: (res) => {
+        setCreatedOrder(res.data.ticketOrder);
+      },
+    });
   };
 
   const isUnavailable =
@@ -271,6 +280,8 @@ export default function TicketPurchaseModal({
               })}
             </div>
 
+            <FieldError message={fieldErrors.tickets} />
+
             {/* Attendee Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 border-t border-white/10 pt-4">
               <div className="space-y-1 sm:col-span-2">
@@ -285,10 +296,18 @@ export default function TicketPurchaseModal({
                   type="text"
                   required
                   value={attendeeName}
-                  onChange={(e) => setAttendeeName(e.target.value)}
+                  onChange={(e) => {
+                    setAttendeeName(e.target.value);
+                    clearError("attendeeName");
+                  }}
                   placeholder="Your full name"
-                  className="w-full border border-white/20 bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/35 focus:border-[#D70E1D] focus:outline-none"
+                  className={`w-full border bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/35 focus:border-[#D70E1D] focus:outline-none ${
+                    fieldErrors.attendeeName
+                      ? "border-[#D70E1D]"
+                      : "border-white/20"
+                  }`}
                 />
+                <FieldError message={fieldErrors.attendeeName} />
               </div>
 
               <div className="space-y-1">
@@ -303,10 +322,16 @@ export default function TicketPurchaseModal({
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    clearError("email");
+                  }}
                   placeholder="you@example.com"
-                  className="w-full border border-white/20 bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/35 focus:border-[#D70E1D] focus:outline-none"
+                  className={`w-full border bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/35 focus:border-[#D70E1D] focus:outline-none ${
+                    fieldErrors.email ? "border-[#D70E1D]" : "border-white/20"
+                  }`}
                 />
+                <FieldError message={fieldErrors.email} />
               </div>
 
               <div className="space-y-1">
@@ -320,10 +345,16 @@ export default function TicketPurchaseModal({
                   id="ticket-phone"
                   type="tel"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    clearError("phone");
+                  }}
                   placeholder="+1 234 567 8900"
-                  className="w-full border border-white/20 bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/35 focus:border-[#D70E1D] focus:outline-none"
+                  className={`w-full border bg-white/[0.04] px-3.5 py-2.5 text-xs text-white placeholder:text-white/35 focus:border-[#D70E1D] focus:outline-none ${
+                    fieldErrors.phone ? "border-[#D70E1D]" : "border-white/20"
+                  }`}
                 />
+                <FieldError message={fieldErrors.phone} />
               </div>
             </div>
 

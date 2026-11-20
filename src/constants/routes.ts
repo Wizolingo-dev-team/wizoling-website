@@ -29,3 +29,9 @@ export function isGatedDashboardRoute(pathname: string): boolean {
   );
 }
 
+export function isStandaloneShellRoute(pathname: string): boolean {
+  return (
+    isGatedDashboardRoute(pathname) || pathname.startsWith("/tickets/verify")
+  );
+}
+

@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { useCustomerLogin } from "@src/hooks/authManagement";
-import { useToast } from "@src/hooks/useToast";
 import { loginSchema } from "@src/validations/authManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
+import DashboardLoader from "@src/components/_atoms/DashboardLoader";
 import AuthSplitShell from "@src/components/Sections/Auth/AuthSplitShell";
 
 export default function LoginForm() {
-  const toast = useToast();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
   const redirectTo =
@@ -22,23 +23,34 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const { mutate: login, isPending } = useCustomerLogin(redirectTo);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const validated = await loginSchema.validate(
-        { email, password },
-        { abortEarly: true }
-      );
-      login({ email: validated.email, password: validated.password });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+    const result = await validateWithSchema(loginSchema, { email, password });
+    if (!result.success) {
+      setFieldErrors(result.errors);
+      return;
     }
+    setFieldErrors({});
+    login(
+      { email: result.data.email, password: result.data.password },
+      {
+        onSuccess: (response) => {
+          if (response.success && response.data) {
+            setIsRedirecting(true);
+          }
+        },
+      }
+    );
   };
+
+  if (isRedirecting) {
+    return <DashboardLoader />;
+  }
 
   return (
     <AuthSplitShell
@@ -63,10 +75,18 @@ export default function LoginForm() {
             type="email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (fieldErrors.email) {
+                setFieldErrors((prev) => ({ ...prev, email: "" }));
+              }
+            }}
             placeholder="you@example.com"
-            className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+            className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+              fieldErrors.email ? "border-[#D70E1D]" : "border-neutral-300"
+            }`}
           />
+          <FieldError message={fieldErrors.email} />
         </div>
 
         <div className="space-y-2">
@@ -82,9 +102,16 @@ export default function LoginForm() {
               type={showPassword ? "text" : "password"}
               required
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (fieldErrors.password) {
+                  setFieldErrors((prev) => ({ ...prev, password: "" }));
+                }
+              }}
               placeholder="Enter your password"
-              className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 pr-11 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+              className={`w-full border bg-neutral-50 px-4 py-3 pr-11 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.password ? "border-[#D70E1D]" : "border-neutral-300"
+              }`}
             />
             <button
               type="button"
@@ -99,6 +126,7 @@ export default function LoginForm() {
               )}
             </button>
           </div>
+          <FieldError message={fieldErrors.password} />
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 pt-1">

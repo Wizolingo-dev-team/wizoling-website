@@ -4,7 +4,7 @@ import React from "react";
 import { Heart, Bookmark } from "lucide-react";
 import WishlistCard from "@src/components/Cards/WishlistCard";
 import Empty from "@src/components/_atoms/Empty";
-import { SkeletonBox } from "@src/components/Skeletons/SkeletonBox";
+import WishlistSkeleton from "@src/components/Skeletons/WishlistSkeleton";
 import { useGetWishlist } from "@src/hooks/wishlistManagement";
 
 export default function WishList() {
@@ -12,16 +12,7 @@ export default function WishList() {
   const favoriteProducts = wishlist?.products ?? [];
 
   if (isLoading) {
-    return (
-      <div className="w-full space-y-8">
-        <SkeletonBox className="h-14 w-56" />
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <SkeletonBox key={i} className="aspect-[4/5] w-full" />
-          ))}
-        </div>
-      </div>
-    );
+    return <WishlistSkeleton />;
   }
 
   return (

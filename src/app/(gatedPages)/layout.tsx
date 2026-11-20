@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 import AuthenticatedLayout from "@src/layouts/AuthenticatedLayout";
+import DashboardLoader from "@src/components/_atoms/DashboardLoader";
 import { SidebarProvider } from "@src/context/sidebar-context";
 import { useGetLoggedInUser } from "@src/hooks/authManagement";
 import { ROUTES } from "@src/constants/routes";
@@ -31,11 +31,7 @@ export default function GatedPagesLayout({
   }, [mounted, user, isLoading, isError, router]);
 
   if (!mounted || isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-neutral-50">
-        <Loader2 className="size-10 animate-spin text-[#D70E1D]" />
-      </div>
-    );
+    return <DashboardLoader />;
   }
 
   if (!user) return null;

@@ -7,7 +7,7 @@ import DealsCard, {
   type DealProductItem,
 } from "@src/components/Cards/DealsCard";
 import Empty from "@src/components/_atoms/Empty";
-import OrderListSkeleton from "@src/components/Skeletons/OrderListSkeleton";
+import DealsSkeleton from "@src/components/Skeletons/DealsSkeleton";
 import { useGetAllDiscounts } from "@src/hooks/discountManagement";
 
 export default function Deals() {
@@ -56,7 +56,7 @@ export default function Deals() {
     return () => clearInterval(timer);
   }, [productsOnDeals]);
 
-  if (isLoading) return <OrderListSkeleton />;
+  if (isLoading) return <DealsSkeleton />;
 
   return (
     <section className="w-full space-y-8">

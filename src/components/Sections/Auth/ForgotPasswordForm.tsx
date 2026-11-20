@@ -4,28 +4,25 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Mail, Loader2 } from "lucide-react";
 import { useForgotPassword } from "@src/hooks/authManagement";
-import { useToast } from "@src/hooks/useToast";
 import { forgotPasswordSchema } from "@src/validations/authManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 import AuthSingleShell from "@src/components/Sections/Auth/AuthSingleShell";
 
 export default function ForgotPasswordForm() {
-  const toast = useToast();
   const [email, setEmail] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const { mutate: sendReset, isPending, isSuccess } = useForgotPassword();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const validated = await forgotPasswordSchema.validate(
-        { email },
-        { abortEarly: true }
-      );
-      sendReset({ email: validated.email });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+    const result = await validateWithSchema(forgotPasswordSchema, { email });
+    if (!result.success) {
+      setFieldErrors(result.errors);
+      return;
     }
+    setFieldErrors({});
+    sendReset({ email: result.data.email });
   };
 
   return (
@@ -48,10 +45,18 @@ export default function ForgotPasswordForm() {
             type="email"
             required
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (fieldErrors.email) {
+                setFieldErrors((prev) => ({ ...prev, email: "" }));
+              }
+            }}
             placeholder="you@example.com"
-            className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+            className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+              fieldErrors.email ? "border-[#D70E1D]" : "border-neutral-300"
+            }`}
           />
+          <FieldError message={fieldErrors.email} />
         </div>
 
         {isSuccess && (

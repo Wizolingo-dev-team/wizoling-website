@@ -12,13 +12,13 @@ import {
   Camera,
 } from "lucide-react";
 import { useRegisterCustomer } from "@src/hooks/authManagement";
-import { useToast } from "@src/hooks/useToast";
 import { registerSchema } from "@src/validations/authManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 import AuthSplitShell from "@src/components/Sections/Auth/AuthSplitShell";
 
 export default function RegisterForm() {
   const router = useRouter();
-  const toast = useToast();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -28,55 +28,60 @@ export default function RegisterForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const { mutate: register, isPending } = useRegisterCustomer();
+
+  const clearError = (field: string) => {
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setAvatarFile(file);
     setAvatarPreview(URL.createObjectURL(file));
+    clearError("avatar");
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const validated = await registerSchema.validate(
-        {
-          firstName,
-          lastName,
-          email,
-          phoneNumber,
-          address,
-          password,
-          avatar: avatarFile,
-        },
-        { abortEarly: true }
-      );
-
-      const formData = new FormData();
-      formData.append("firstName", validated.firstName);
-      formData.append("lastName", validated.lastName);
-      formData.append("email", validated.email);
-      formData.append("phoneNumber", validated.phoneNumber ?? "");
-      formData.append("address", validated.address ?? "");
-      formData.append("password", validated.password);
-      if (avatarFile) {
-        formData.append("avatar", avatarFile);
-      }
-
-      register(formData, {
-        onSuccess: () => {
-          router.push(
-            `/verify-email?email=${encodeURIComponent(validated.email)}`
-          );
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+    const result = await validateWithSchema(registerSchema, {
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      address,
+      password,
+      avatar: avatarFile,
+    });
+    if (!result.success) {
+      setFieldErrors(result.errors);
+      return;
     }
+    setFieldErrors({});
+
+    const validated = result.data;
+    const formData = new FormData();
+    formData.append("firstName", validated.firstName);
+    formData.append("lastName", validated.lastName);
+    formData.append("email", validated.email);
+    formData.append("phoneNumber", validated.phoneNumber ?? "");
+    formData.append("address", validated.address ?? "");
+    formData.append("password", validated.password);
+    if (avatarFile) {
+      formData.append("avatar", avatarFile);
+    }
+
+    register(formData, {
+      onSuccess: () => {
+        router.push(
+          `/verify-email?email=${encodeURIComponent(validated.email)}`
+        );
+      },
+    });
   };
 
   return (
@@ -138,10 +143,18 @@ export default function RegisterForm() {
               required
               maxLength={32}
               value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              onChange={(e) => {
+                setFirstName(e.target.value);
+                clearError("firstName");
+              }}
               placeholder="First name"
-              className="w-full border border-neutral-300 bg-neutral-50 px-3.5 py-2.5 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+              className={`w-full border bg-neutral-50 px-3.5 py-2.5 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.firstName
+                  ? "border-[#D70E1D]"
+                  : "border-neutral-300"
+              }`}
             />
+            <FieldError message={fieldErrors.firstName} />
           </div>
 
           <div className="space-y-1.5">
@@ -157,10 +170,16 @@ export default function RegisterForm() {
               required
               maxLength={32}
               value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
+              onChange={(e) => {
+                setLastName(e.target.value);
+                clearError("lastName");
+              }}
               placeholder="Last name"
-              className="w-full border border-neutral-300 bg-neutral-50 px-3.5 py-2.5 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+              className={`w-full border bg-neutral-50 px-3.5 py-2.5 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.lastName ? "border-[#D70E1D]" : "border-neutral-300"
+              }`}
             />
+            <FieldError message={fieldErrors.lastName} />
           </div>
         </div>
 
@@ -177,10 +196,16 @@ export default function RegisterForm() {
               type="email"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                clearError("email");
+              }}
               placeholder="you@example.com"
-              className="w-full border border-neutral-300 bg-neutral-50 px-3.5 py-2.5 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+              className={`w-full border bg-neutral-50 px-3.5 py-2.5 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.email ? "border-[#D70E1D]" : "border-neutral-300"
+              }`}
             />
+            <FieldError message={fieldErrors.email} />
           </div>
 
           <div className="space-y-1.5">
@@ -194,10 +219,18 @@ export default function RegisterForm() {
               id="register-phone"
               type="tel"
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              onChange={(e) => {
+                setPhoneNumber(e.target.value);
+                clearError("phoneNumber");
+              }}
               placeholder="+1 234 567 8900"
-              className="w-full border border-neutral-300 bg-neutral-50 px-3.5 py-2.5 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+              className={`w-full border bg-neutral-50 px-3.5 py-2.5 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.phoneNumber
+                  ? "border-[#D70E1D]"
+                  : "border-neutral-300"
+              }`}
             />
+            <FieldError message={fieldErrors.phoneNumber} />
           </div>
         </div>
 
@@ -212,10 +245,16 @@ export default function RegisterForm() {
             id="register-address"
             type="text"
             value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={(e) => {
+              setAddress(e.target.value);
+              clearError("address");
+            }}
             placeholder="Street, City, Country"
-            className="w-full border border-neutral-300 bg-neutral-50 px-3.5 py-2.5 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+            className={`w-full border bg-neutral-50 px-3.5 py-2.5 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+              fieldErrors.address ? "border-[#D70E1D]" : "border-neutral-300"
+            }`}
           />
+          <FieldError message={fieldErrors.address} />
         </div>
 
         <div className="space-y-1.5">
@@ -233,9 +272,14 @@ export default function RegisterForm() {
               minLength={6}
               maxLength={64}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                clearError("password");
+              }}
               placeholder="Create a secure password"
-              className="w-full border border-neutral-300 bg-neutral-50 px-3.5 py-2.5 pr-11 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+              className={`w-full border bg-neutral-50 px-3.5 py-2.5 pr-11 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.password ? "border-[#D70E1D]" : "border-neutral-300"
+              }`}
             />
             <button
               type="button"
@@ -250,6 +294,7 @@ export default function RegisterForm() {
               )}
             </button>
           </div>
+          <FieldError message={fieldErrors.password} />
         </div>
 
         <button

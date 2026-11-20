@@ -7,6 +7,8 @@ import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
 import { useResetPassword } from "@src/hooks/authManagement";
 import { useToast } from "@src/hooks/useToast";
 import { resetPasswordSchema } from "@src/validations/authManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 import AuthSingleShell from "@src/components/Sections/Auth/AuthSingleShell";
 
 type ResetPasswordFormProps = {
@@ -23,6 +25,7 @@ export default function ResetPasswordForm({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const { mutate: resetPassword, isPending } = useResetPassword();
 
@@ -32,17 +35,16 @@ export default function ResetPasswordForm({
       toast.error("Missing or invalid password reset token.");
       return;
     }
-    try {
-      const validated = await resetPasswordSchema.validate(
-        { password, confirmPassword },
-        { abortEarly: true }
-      );
-      resetPassword({ password: validated.password, token });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+    const result = await validateWithSchema(resetPasswordSchema, {
+      password,
+      confirmPassword,
+    });
+    if (!result.success) {
+      setFieldErrors(result.errors);
+      return;
     }
+    setFieldErrors({});
+    resetPassword({ password: result.data.password, token });
   };
 
   return (
@@ -67,9 +69,16 @@ export default function ResetPasswordForm({
               required
               minLength={6}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (fieldErrors.password) {
+                  setFieldErrors((prev) => ({ ...prev, password: "" }));
+                }
+              }}
               placeholder="Enter new password"
-              className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 pr-11 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+              className={`w-full border bg-neutral-50 px-4 py-3 pr-11 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.password ? "border-[#D70E1D]" : "border-neutral-300"
+              }`}
             />
             <button
               type="button"
@@ -84,6 +93,7 @@ export default function ResetPasswordForm({
               )}
             </button>
           </div>
+          <FieldError message={fieldErrors.password} />
         </div>
 
         <div className="space-y-2">
@@ -99,10 +109,20 @@ export default function ResetPasswordForm({
             required
             minLength={6}
             value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              if (fieldErrors.confirmPassword) {
+                setFieldErrors((prev) => ({ ...prev, confirmPassword: "" }));
+              }
+            }}
             placeholder="Re-enter new password"
-            className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
+            className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+              fieldErrors.confirmPassword
+                ? "border-[#D70E1D]"
+                : "border-neutral-300"
+            }`}
           />
+          <FieldError message={fieldErrors.confirmPassword} />
         </div>
 
         <button

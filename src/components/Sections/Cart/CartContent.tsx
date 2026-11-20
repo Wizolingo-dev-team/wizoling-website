@@ -23,12 +23,15 @@ import { useValidateDiscount } from "@src/hooks/discountManagement";
 import { useToast } from "@src/hooks/useToast";
 import { getAuthToken } from "@src/utils/auth";
 import { validateDiscountSchema } from "@src/validations/discountManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 
 export default function CartContent() {
   const router = useRouter();
   const toast = useToast();
   const [mounted, setMounted] = useState(false);
   const [couponCode, setCouponCode] = useState("");
+  const [couponError, setCouponError] = useState("");
 
   const items = useCart((s) => s.items);
   const appliedDiscount = useCart((s) => s.appliedDiscount);
@@ -58,26 +61,27 @@ export default function CartContent() {
       return;
     }
 
-    try {
-      const validated = await validateDiscountSchema.validate(
-        { code: couponCode, productId: items[0]?.product._id },
-        { abortEarly: true }
+    const result = await validateWithSchema(validateDiscountSchema, {
+      code: couponCode,
+      productId: items[0]?.product._id,
+    });
+    if (!result.success) {
+      setCouponError(
+        result.errors.code ?? result.errors._form ?? "Invalid coupon code"
       );
-      validateDiscount(validated, {
-        onSuccess: (res) => {
-          applyDiscount({
-            discountCode: res.data.discountCode,
-            discountPercentage: res.data.discountPercentage,
-            products: res.data.products,
-          });
-          setCouponCode("");
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+      return;
     }
+    setCouponError("");
+    validateDiscount(result.data, {
+      onSuccess: (res) => {
+        applyDiscount({
+          discountCode: res.data.discountCode,
+          discountPercentage: res.data.discountPercentage,
+          products: res.data.products,
+        });
+        setCouponCode("");
+      },
+    });
   };
 
   const handleProceedToCheckout = () => {
@@ -267,15 +271,23 @@ export default function CartContent() {
                 onSubmit={handleApplyCoupon}
                 className="flex flex-col sm:flex-row gap-3 border border-neutral-200 bg-white p-5"
               >
-                <div className="relative flex-1">
-                  <Tag className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
-                  <input
-                    type="text"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                    placeholder="Coupon / Discount Code"
-                    className="w-full border border-neutral-300 bg-neutral-50 pl-10 pr-4 py-3 text-xs uppercase tracking-wider text-[#111111] placeholder:normal-case placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none"
-                  />
+                <div className="flex-1 space-y-1.5">
+                  <div className="relative">
+                    <Tag className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-neutral-400" />
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => {
+                        setCouponCode(e.target.value);
+                        if (couponError) setCouponError("");
+                      }}
+                      placeholder="Coupon / Discount Code"
+                      className={`w-full border bg-neutral-50 pl-10 pr-4 py-3 text-xs uppercase tracking-wider text-[#111111] placeholder:normal-case placeholder:text-neutral-400 focus:border-[#D70E1D] focus:outline-none ${
+                        couponError ? "border-[#D70E1D]" : "border-neutral-300"
+                      }`}
+                    />
+                  </div>
+                  <FieldError message={couponError} />
                 </div>
                 <button
                   type="submit"

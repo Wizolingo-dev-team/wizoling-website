@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { useUpdateProfile } from "@src/hooks/profileManagement";
-import { useToast } from "@src/hooks/useToast";
 import { updateProfileSchema } from "@src/validations/profileManagement";
+import { validateWithSchema } from "@src/utils/validation";
+import FieldError from "@src/components/_atoms/FieldError";
 import type { User } from "@src/types/authManagement";
 
 export default function ProfileForm({ user }: { user: User | null | undefined }) {
-  const toast = useToast();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
   const [formData, setFormData] = useState({
     firstName: user?.firstName ?? "",
@@ -15,6 +15,7 @@ export default function ProfileForm({ user }: { user: User | null | undefined })
     phoneNumber: user?.phoneNumber ?? "",
     address: user?.address ?? "",
   });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (user) {
@@ -27,23 +28,26 @@ export default function ProfileForm({ user }: { user: User | null | undefined })
     }
   }, [user]);
 
+  const clearError = (field: string) => {
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const validated = await updateProfileSchema.validate(formData, {
-        abortEarly: true,
-      });
-      const data = new FormData();
-      data.append("firstName", validated.firstName);
-      data.append("lastName", validated.lastName);
-      data.append("phoneNumber", validated.phoneNumber ?? "");
-      data.append("address", validated.address ?? "");
-      updateProfile(data);
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
+    const result = await validateWithSchema(updateProfileSchema, formData);
+    if (!result.success) {
+      setFieldErrors(result.errors);
+      return;
     }
+    setFieldErrors({});
+    const data = new FormData();
+    data.append("firstName", result.data.firstName);
+    data.append("lastName", result.data.lastName);
+    data.append("phoneNumber", result.data.phoneNumber ?? "");
+    data.append("address", result.data.address ?? "");
+    updateProfile(data);
   };
 
   return (
@@ -75,11 +79,17 @@ export default function ProfileForm({ user }: { user: User | null | undefined })
               type="text"
               required
               value={formData.firstName}
-              onChange={(e) =>
-                setFormData({ ...formData, firstName: e.target.value })
-              }
-              className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none"
+              onChange={(e) => {
+                setFormData({ ...formData, firstName: e.target.value });
+                clearError("firstName");
+              }}
+              className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.firstName
+                  ? "border-[#D70E1D]"
+                  : "border-neutral-300"
+              }`}
             />
+            <FieldError message={fieldErrors.firstName} />
           </div>
           <div className="space-y-1.5">
             <label
@@ -93,11 +103,15 @@ export default function ProfileForm({ user }: { user: User | null | undefined })
               type="text"
               required
               value={formData.lastName}
-              onChange={(e) =>
-                setFormData({ ...formData, lastName: e.target.value })
-              }
-              className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none"
+              onChange={(e) => {
+                setFormData({ ...formData, lastName: e.target.value });
+                clearError("lastName");
+              }}
+              className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none ${
+                fieldErrors.lastName ? "border-[#D70E1D]" : "border-neutral-300"
+              }`}
             />
+            <FieldError message={fieldErrors.lastName} />
           </div>
         </div>
 
@@ -112,11 +126,17 @@ export default function ProfileForm({ user }: { user: User | null | undefined })
             id="profile-phone"
             type="tel"
             value={formData.phoneNumber}
-            onChange={(e) =>
-              setFormData({ ...formData, phoneNumber: e.target.value })
-            }
-            className="w-full border border-neutral-300 bg-neutral-50 px-4 py-3 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none"
+            onChange={(e) => {
+              setFormData({ ...formData, phoneNumber: e.target.value });
+              clearError("phoneNumber");
+            }}
+            className={`w-full border bg-neutral-50 px-4 py-3 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none ${
+              fieldErrors.phoneNumber
+                ? "border-[#D70E1D]"
+                : "border-neutral-300"
+            }`}
           />
+          <FieldError message={fieldErrors.phoneNumber} />
         </div>
 
         <div className="space-y-1.5">
@@ -146,11 +166,15 @@ export default function ProfileForm({ user }: { user: User | null | undefined })
             id="profile-address"
             rows={3}
             value={formData.address}
-            onChange={(e) =>
-              setFormData({ ...formData, address: e.target.value })
-            }
-            className="w-full border border-neutral-300 bg-neutral-50 p-3.5 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none"
+            onChange={(e) => {
+              setFormData({ ...formData, address: e.target.value });
+              clearError("address");
+            }}
+            className={`w-full border bg-neutral-50 p-3.5 text-sm text-[#111111] focus:border-[#D70E1D] focus:outline-none ${
+              fieldErrors.address ? "border-[#D70E1D]" : "border-neutral-300"
+            }`}
           />
+          <FieldError message={fieldErrors.address} />
         </div>
 
         <button

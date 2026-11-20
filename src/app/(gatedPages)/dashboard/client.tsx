@@ -7,7 +7,7 @@ import PendingOrders from "@src/components/_widgets/PendingOrders";
 import DeliveredOrders from "@src/components/_widgets/DeliveredOrders";
 import CanceledOrders from "@src/components/_widgets/CanceledOrders";
 import CustomerFeeds from "@src/components/_widgets/CustomerFeeds";
-import OrderListSkeleton from "@src/components/Skeletons/OrderListSkeleton";
+import DashboardSkeleton from "@src/components/Skeletons/DashboardSkeleton";
 import { useGetUserOrders } from "@src/hooks/orderManagement";
 import { useGetUserLogs } from "@src/hooks/activityManagement";
 
@@ -47,11 +47,7 @@ export default function DashboardClient() {
   }, [orders]);
 
   if (ordersLoading || logsLoading) {
-    return (
-      <div className="p-4 sm:p-6">
-        <OrderListSkeleton />
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (

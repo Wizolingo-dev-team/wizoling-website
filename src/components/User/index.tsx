@@ -7,7 +7,7 @@ import ProfileForm from "@src/components/Forms/ProfileForm";
 import ChangePasswordForm from "@src/components/Forms/ChangePasswordForm";
 import { useGetLoggedInUser } from "@src/hooks/authManagement";
 import { useUpdateProfile } from "@src/hooks/profileManagement";
-import { SkeletonBox } from "@src/components/Skeletons/SkeletonBox";
+import UserSettingsSkeleton from "@src/components/Skeletons/UserSettingsSkeleton";
 
 export default function User() {
   const { data: user, isLoading } = useGetLoggedInUser();
@@ -24,12 +24,7 @@ export default function User() {
   };
 
   if (isLoading) {
-    return (
-      <div className="border border-neutral-200 bg-white p-8 space-y-6">
-        <SkeletonBox className="h-28 w-28 rounded-full" />
-        <SkeletonBox className="h-48 w-full" />
-      </div>
-    );
+    return <UserSettingsSkeleton />;
   }
 
   const initials =
