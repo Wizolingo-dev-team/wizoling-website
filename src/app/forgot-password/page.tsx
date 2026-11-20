@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import ForgotPasswordForm from "@src/components/Sections/Auth/ForgotPasswordForm";
 
@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function ForgotPasswordPage() {
-  return <ForgotPasswordForm />;
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <ForgotPasswordForm />
+    </Suspense>
+  );
 }
 

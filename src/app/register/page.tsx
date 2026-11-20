@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import type { Metadata } from "next";
 import RegisterForm from "@src/components/Sections/Auth/RegisterForm";
 
@@ -10,6 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default function RegisterPage() {
-  return <RegisterForm />;
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <RegisterForm />
+    </Suspense>
+  );
 }
 
