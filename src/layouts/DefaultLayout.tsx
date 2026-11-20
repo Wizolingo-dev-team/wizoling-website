@@ -11,15 +11,21 @@ import {
   getPageBackground,
   isWhiteBackgroundRoute,
 } from "@src/constants/pageBackgrounds";
+import { isGatedDashboardRoute } from "@src/constants/routes";
 import { cn } from "@src/lib/utils";
 
 const NO_FOOTER_ROUTES = ["/biography"];
 
 export default function DefaultLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const isGated = isGatedDashboardRoute(pathname);
   const background = getPageBackground(pathname);
   const isWhiteBg = isWhiteBackgroundRoute(pathname);
   const showFooter = !NO_FOOTER_ROUTES.includes(pathname);
+
+  if (isGated) {
+    return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
+  }
 
   return (
     <div

@@ -11,7 +11,9 @@ export default function LoginForm() {
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
   const redirectTo =
-    redirectParam && redirectParam.startsWith("/") ? redirectParam : "/shop";
+    redirectParam && redirectParam.startsWith("/")
+      ? redirectParam
+      : "/dashboard";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

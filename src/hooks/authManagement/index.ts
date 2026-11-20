@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { authService } from "@src/lib/requests/authManagement";
+import { activityService } from "@src/lib/requests/activityManagement";
 import { useToast } from "@src/hooks/useToast";
 import { clearAuth, getAuthToken, setAuthToken } from "@src/utils/auth";
 import type {
@@ -57,7 +58,7 @@ export const useResendOtp = () => {
   });
 };
 
-export const useCustomerLogin = (redirectTo = "/shop") => {
+export const useCustomerLogin = (redirectTo = "/dashboard") => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const toast = useToast();
@@ -123,7 +124,10 @@ export const useLogoutCustomer = () => {
   const queryClient = useQueryClient();
   const toast = useToast();
 
-  return () => {
+  return async () => {
+    await activityService
+      .logActivity("LOGOUT", "User logged out of session")
+      .catch(() => {});
     clearAuth();
     queryClient.removeQueries({ queryKey: ["loggedInUser"] });
     queryClient.removeQueries({ queryKey: ["wishlist"] });

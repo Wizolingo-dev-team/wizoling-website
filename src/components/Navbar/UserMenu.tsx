@@ -3,7 +3,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { User as UserIcon, ShoppingBag, Heart, LogOut, LayoutDashboard } from "lucide-react";
+import {
+  User as UserIcon,
+  ShoppingBag,
+  Heart,
+  LogOut,
+  LayoutDashboard,
+  PackageCheck,
+  BadgePercent,
+  Settings,
+} from "lucide-react";
 import {
   useGetLoggedInUser,
   useLogoutCustomer,
@@ -90,7 +99,31 @@ export default function UserMenu() {
               className="flex items-center gap-2.5 px-3 py-2 text-xs uppercase tracking-[0.16em] text-white/80 transition-colors hover:bg-[#D70E1D] hover:text-white"
             >
               <LayoutDashboard className="size-3.5" />
-              <span>My Account</span>
+              <span>Dashboard</span>
+            </Link>
+            <Link
+              href="/order-management"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-2.5 px-3 py-2 text-xs uppercase tracking-[0.16em] text-white/80 transition-colors hover:bg-[#D70E1D] hover:text-white"
+            >
+              <PackageCheck className="size-3.5" />
+              <span>Orders &amp; Downloads</span>
+            </Link>
+            <Link
+              href="/my-deals"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-2.5 px-3 py-2 text-xs uppercase tracking-[0.16em] text-white/80 transition-colors hover:bg-[#D70E1D] hover:text-white"
+            >
+              <BadgePercent className="size-3.5" />
+              <span>My Deals</span>
+            </Link>
+            <Link
+              href="/wishlist"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-2.5 px-3 py-2 text-xs uppercase tracking-[0.16em] text-white/80 transition-colors hover:bg-[#D70E1D] hover:text-white"
+            >
+              <Heart className="size-3.5" />
+              <span>Wishlist</span>
             </Link>
             <Link
               href="/cart"
@@ -101,12 +134,12 @@ export default function UserMenu() {
               <span>My Cart</span>
             </Link>
             <Link
-              href="/wishlist"
+              href="/user-settings"
               onClick={() => setMenuOpen(false)}
               className="flex items-center gap-2.5 px-3 py-2 text-xs uppercase tracking-[0.16em] text-white/80 transition-colors hover:bg-[#D70E1D] hover:text-white"
             >
-              <Heart className="size-3.5" />
-              <span>Wishlist</span>
+              <Settings className="size-3.5" />
+              <span>User Settings</span>
             </Link>
           </div>
 

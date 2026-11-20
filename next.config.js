@@ -1,6 +1,9 @@
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
+  typescript: {
+    ignoreBuildErrors: false,
+  },
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -13,4 +16,3 @@ const config = {
 };
 
 export default config;
-
