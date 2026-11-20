@@ -4,16 +4,28 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Mail, Loader2 } from "lucide-react";
 import { useForgotPassword } from "@src/hooks/authManagement";
+import { useToast } from "@src/hooks/useToast";
+import { forgotPasswordSchema } from "@src/validations/authManagement";
 import AuthSingleShell from "@src/components/Sections/Auth/AuthSingleShell";
 
 export default function ForgotPasswordForm() {
+  const toast = useToast();
   const [email, setEmail] = useState("");
   const { mutate: sendReset, isPending, isSuccess } = useForgotPassword();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    sendReset({ email: email.trim() });
+    try {
+      const validated = await forgotPasswordSchema.validate(
+        { email },
+        { abortEarly: true }
+      );
+      sendReset({ email: validated.email });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
+    }
   };
 
   return (

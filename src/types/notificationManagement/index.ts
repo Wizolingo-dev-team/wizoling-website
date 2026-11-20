@@ -3,6 +3,7 @@ import type { MongoEntity } from "@src/types/common";
 export type NotificationType =
   | "order"
   | "download"
+  | "event"
   | "newsletter"
   | "auth"
   | "system";

@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff, KeyRound, Loader2 } from "lucide-react";
 import { useResetPassword } from "@src/hooks/authManagement";
 import { useToast } from "@src/hooks/useToast";
+import { resetPasswordSchema } from "@src/validations/authManagement";
 import AuthSingleShell from "@src/components/Sections/Auth/AuthSingleShell";
 
 type ResetPasswordFormProps = {
@@ -25,21 +26,23 @@ export default function ResetPasswordForm({
 
   const { mutate: resetPassword, isPending } = useResetPassword();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!token) {
       toast.error("Missing or invalid password reset token.");
       return;
     }
-    if (password.length < 6) {
-      toast.error("Password must be at least 6 characters long.");
-      return;
+    try {
+      const validated = await resetPasswordSchema.validate(
+        { password, confirmPassword },
+        { abortEarly: true }
+      );
+      resetPassword({ password: validated.password, token });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
     }
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match.");
-      return;
-    }
-    resetPassword({ password, token });
   };
 
   return (

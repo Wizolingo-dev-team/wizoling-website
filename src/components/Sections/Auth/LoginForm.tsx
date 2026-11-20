@@ -5,9 +5,12 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import { useCustomerLogin } from "@src/hooks/authManagement";
+import { useToast } from "@src/hooks/useToast";
+import { loginSchema } from "@src/validations/authManagement";
 import AuthSplitShell from "@src/components/Sections/Auth/AuthSplitShell";
 
 export default function LoginForm() {
+  const toast = useToast();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
   const redirectTo =
@@ -22,10 +25,19 @@ export default function LoginForm() {
 
   const { mutate: login, isPending } = useCustomerLogin(redirectTo);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email.trim() || !password) return;
-    login({ email: email.trim(), password });
+    try {
+      const validated = await loginSchema.validate(
+        { email, password },
+        { abortEarly: true }
+      );
+      login({ email: validated.email, password: validated.password });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
+    }
   };
 
   return (

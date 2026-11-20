@@ -8,20 +8,49 @@ import {
   useResendOtp,
   useVerifyCustomerOtp,
 } from "@src/hooks/authManagement";
+import { useToast } from "@src/hooks/useToast";
+import {
+  resendOtpSchema,
+  verifyOtpSchema,
+} from "@src/validations/authManagement";
 import AuthSingleShell from "@src/components/Sections/Auth/AuthSingleShell";
 
 export default function VerifyEmailForm() {
   const searchParams = useSearchParams();
+  const toast = useToast();
   const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [otp, setOtp] = useState("");
 
   const { mutate: verifyOtp, isPending: verifying } = useVerifyCustomerOtp();
   const { mutate: resendOtp, isPending: resending } = useResendOtp();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email.trim() || !otp.trim()) return;
-    verifyOtp({ email: email.trim(), otp: otp.trim() });
+    try {
+      const validated = await verifyOtpSchema.validate(
+        { email, otp },
+        { abortEarly: true }
+      );
+      verifyOtp({ email: validated.email, otp: validated.otp });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      const validated = await resendOtpSchema.validate(
+        { email },
+        { abortEarly: true }
+      );
+      resendOtp({ email: validated.email });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
+    }
   };
 
   return (
@@ -90,7 +119,7 @@ export default function VerifyEmailForm() {
           <button
             type="button"
             disabled={resending || !email.trim()}
-            onClick={() => resendOtp({ email: email.trim() })}
+            onClick={handleResend}
             className="inline-flex items-center gap-1.5 font-semibold uppercase tracking-[0.16em] text-[#D70E1D] hover:text-[#111111] disabled:opacity-50"
           >
             <RefreshCw className="size-3.5" />

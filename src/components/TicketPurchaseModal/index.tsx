@@ -22,6 +22,7 @@ import { useGetLoggedInUser } from "@src/hooks/authManagement";
 import { usePurchaseTicket } from "@src/hooks/eventManagement";
 import { useToast } from "@src/hooks/useToast";
 import { getAuthToken } from "@src/utils/auth";
+import { purchaseTicketSchema } from "@src/validations/eventManagement";
 import type { EventItem, TicketOrder } from "@src/types/eventManagement";
 
 type TicketPurchaseModalProps = {
@@ -103,35 +104,39 @@ export default function TicketPurchaseModal({
     );
   }, [selectedTickets]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!getAuthToken()) {
       toast.info("Please sign in to complete your ticket purchase.");
       router.push(`/login?redirect=/events/${event.slug}`);
       return;
     }
-    if (selectedTickets.length === 0) {
-      toast.warning("Please select at least one ticket.");
-      return;
-    }
 
-    purchaseTicket(
-      {
-        eventId: event._id,
-        tickets: selectedTickets.map((item) => ({
-          tierId: item.tier._id,
-          quantity: item.quantity,
-        })),
-        attendeeName: attendeeName.trim(),
-        email: email.trim(),
-        phone: phone.trim(),
-      },
-      {
+    const payloadCandidate = {
+      eventId: event._id,
+      tickets: selectedTickets.map((item) => ({
+        tierId: item.tier._id,
+        quantity: item.quantity,
+      })),
+      attendeeName: attendeeName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+    };
+
+    try {
+      const validated = await purchaseTicketSchema.validate(payloadCandidate, {
+        abortEarly: true,
+      });
+      purchaseTicket(validated, {
         onSuccess: (res) => {
           setCreatedOrder(res.data.ticketOrder);
         },
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
       }
-    );
+    }
   };
 
   const isUnavailable =

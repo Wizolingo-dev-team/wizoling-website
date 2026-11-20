@@ -19,6 +19,7 @@ import { useGetLoggedInUser } from "@src/hooks/authManagement";
 import { useCreateOrder } from "@src/hooks/orderManagement";
 import { useToast } from "@src/hooks/useToast";
 import { getAuthToken } from "@src/utils/auth";
+import { createOrderSchema } from "@src/validations/orderManagement";
 import type { Order } from "@src/types/orderManagement";
 
 export default function CheckoutContent() {
@@ -72,39 +73,49 @@ export default function CheckoutContent() {
   const discountAmount = mounted ? getDiscountAmount() : 0;
   const total = mounted ? getTotal() : 0;
 
-  const handlePlaceOrder = (e: React.FormEvent<HTMLFormElement>) => {
+  const handlePlaceOrder = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (items.length === 0) return;
 
-    createOrder(
-      {
-        products: items.map((item) => ({
-          _id: item.product._id,
-          quantity: item.quantity,
-          size: item.selectedSize,
-          color: item.selectedColor,
-        })),
-        deliveryFee: 0,
-        discountCode: appliedDiscount?.discountCode,
-        paymentMethod: "manual",
-        email: email.trim(),
-        phone: includesMerch ? phone.trim() : undefined,
-        address: includesMerch ? address.trim() : undefined,
-        city: includesMerch ? city.trim() : undefined,
-        state: includesMerch ? stateRegion.trim() : undefined,
-        country: includesMerch ? country.trim() : undefined,
-        postalCode: includesMerch ? postalCode.trim() : undefined,
-        additionalInfo: additionalInfo.trim() || undefined,
-      },
-      {
+    const payloadCandidate = {
+      products: items.map((item) => ({
+        _id: item.product._id,
+        quantity: item.quantity,
+        size: item.selectedSize,
+        color: item.selectedColor,
+      })),
+      includesMerch,
+      deliveryFee: 0,
+      discountCode: appliedDiscount?.discountCode,
+      paymentMethod: "manual" as const,
+      email: email.trim(),
+      phone: includesMerch ? phone.trim() : undefined,
+      address: includesMerch ? address.trim() : undefined,
+      city: includesMerch ? city.trim() : undefined,
+      state: includesMerch ? stateRegion.trim() : undefined,
+      country: includesMerch ? country.trim() : undefined,
+      postalCode: includesMerch ? postalCode.trim() : undefined,
+      additionalInfo: additionalInfo.trim() || undefined,
+    };
+
+    try {
+      await createOrderSchema.validate(payloadCandidate, { abortEarly: true });
+      const { includesMerch: _omit, ...orderPayload } = payloadCandidate;
+      void _omit;
+
+      createOrder(orderPayload, {
         onSuccess: (res) => {
           if (res.data) {
             setConfirmedOrder(res.data);
           }
           clearCart();
         },
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
       }
-    );
+    }
   };
 
   return (

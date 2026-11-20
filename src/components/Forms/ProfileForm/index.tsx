@@ -2,9 +2,12 @@
 
 import React, { useEffect, useState } from "react";
 import { useUpdateProfile } from "@src/hooks/profileManagement";
+import { useToast } from "@src/hooks/useToast";
+import { updateProfileSchema } from "@src/validations/profileManagement";
 import type { User } from "@src/types/authManagement";
 
 export default function ProfileForm({ user }: { user: User | null | undefined }) {
+  const toast = useToast();
   const { mutate: updateProfile, isPending } = useUpdateProfile();
   const [formData, setFormData] = useState({
     firstName: user?.firstName ?? "",
@@ -24,11 +27,23 @@ export default function ProfileForm({ user }: { user: User | null | undefined })
     }
   }, [user]);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => data.append(key, value));
-    updateProfile(data);
+    try {
+      const validated = await updateProfileSchema.validate(formData, {
+        abortEarly: true,
+      });
+      const data = new FormData();
+      data.append("firstName", validated.firstName);
+      data.append("lastName", validated.lastName);
+      data.append("phoneNumber", validated.phoneNumber ?? "");
+      data.append("address", validated.address ?? "");
+      updateProfile(data);
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
+    }
   };
 
   return (

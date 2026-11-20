@@ -12,10 +12,13 @@ import {
   Camera,
 } from "lucide-react";
 import { useRegisterCustomer } from "@src/hooks/authManagement";
+import { useToast } from "@src/hooks/useToast";
+import { registerSchema } from "@src/validations/authManagement";
 import AuthSplitShell from "@src/components/Sections/Auth/AuthSplitShell";
 
 export default function RegisterForm() {
   const router = useRouter();
+  const toast = useToast();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -35,26 +38,45 @@ export default function RegisterForm() {
     setAvatarPreview(URL.createObjectURL(file));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("firstName", firstName.trim());
-    formData.append("lastName", lastName.trim());
-    formData.append("email", email.trim());
-    formData.append("phoneNumber", phoneNumber.trim());
-    formData.append("address", address.trim());
-    formData.append("password", password);
-    if (avatarFile) {
-      formData.append("avatar", avatarFile);
-    }
+    try {
+      const validated = await registerSchema.validate(
+        {
+          firstName,
+          lastName,
+          email,
+          phoneNumber,
+          address,
+          password,
+          avatar: avatarFile,
+        },
+        { abortEarly: true }
+      );
 
-    register(formData, {
-      onSuccess: () => {
-        router.push(
-          `/verify-email?email=${encodeURIComponent(email.trim())}`
-        );
-      },
-    });
+      const formData = new FormData();
+      formData.append("firstName", validated.firstName);
+      formData.append("lastName", validated.lastName);
+      formData.append("email", validated.email);
+      formData.append("phoneNumber", validated.phoneNumber ?? "");
+      formData.append("address", validated.address ?? "");
+      formData.append("password", validated.password);
+      if (avatarFile) {
+        formData.append("avatar", avatarFile);
+      }
+
+      register(formData, {
+        onSuccess: () => {
+          router.push(
+            `/verify-email?email=${encodeURIComponent(validated.email)}`
+          );
+        },
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
+      }
+    }
   };
 
   return (

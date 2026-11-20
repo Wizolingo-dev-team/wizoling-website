@@ -22,6 +22,7 @@ import { useCart } from "@src/hooks/useCart";
 import { useValidateDiscount } from "@src/hooks/discountManagement";
 import { useToast } from "@src/hooks/useToast";
 import { getAuthToken } from "@src/utils/auth";
+import { validateDiscountSchema } from "@src/validations/discountManagement";
 
 export default function CartContent() {
   const router = useRouter();
@@ -49,20 +50,20 @@ export default function CartContent() {
     setMounted(true);
   }, []);
 
-  const handleApplyCoupon = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleApplyCoupon = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const code = couponCode.trim().toUpperCase();
-    if (!code) return;
-
     if (!getAuthToken()) {
       toast.info("Please sign in to apply a discount code.");
       router.push("/login?redirect=/cart");
       return;
     }
 
-    validateDiscount(
-      { code, productId: items[0]?.product._id },
-      {
+    try {
+      const validated = await validateDiscountSchema.validate(
+        { code: couponCode, productId: items[0]?.product._id },
+        { abortEarly: true }
+      );
+      validateDiscount(validated, {
         onSuccess: (res) => {
           applyDiscount({
             discountCode: res.data.discountCode,
@@ -71,8 +72,12 @@ export default function CartContent() {
           });
           setCouponCode("");
         },
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
       }
-    );
+    }
   };
 
   const handleProceedToCheckout = () => {

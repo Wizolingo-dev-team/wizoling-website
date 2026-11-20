@@ -31,6 +31,7 @@ import {
 import { useCart } from "@src/hooks/useCart";
 import { useToast } from "@src/hooks/useToast";
 import { getAuthToken } from "@src/utils/auth";
+import { addReviewSchema } from "@src/validations/reviewManagement";
 import { cn } from "@src/lib/utils";
 
 type TabKey = "description" | "details" | "reviews";
@@ -123,23 +124,29 @@ export default function ShopDetailsContent({
     toggleWishlist({ productId: product._id });
   };
 
-  const handleReviewSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleReviewSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!getAuthToken()) {
       toast.info("Please sign in to leave a review.");
       router.push(`/login?redirect=/shop/${product._id}`);
       return;
     }
-    if (!reviewText.trim()) return;
-    addReview(
-      { productId: product._id, rating, review: reviewText.trim() },
-      {
+    try {
+      const validated = await addReviewSchema.validate(
+        { productId: product._id, rating, review: reviewText },
+        { abortEarly: true }
+      );
+      addReview(validated, {
         onSuccess: () => {
           setReviewText("");
           setRating(5);
         },
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
       }
-    );
+    }
   };
 
   return (

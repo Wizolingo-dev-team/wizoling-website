@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useToast } from "@src/hooks/useToast";
 import { useChangePassword } from "@src/hooks/profileManagement";
+import { changePasswordSchema } from "@src/validations/profileManagement";
 
 export default function ChangePasswordForm() {
   const toast = useToast();
@@ -27,27 +28,33 @@ export default function ChangePasswordForm() {
     }));
   };
 
-  const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleUpdate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (passwords.new.length < 6) {
-      toast.error("New password must be at least 6 characters long");
-      return;
-    }
-    if (passwords.new !== passwords.confirm) {
-      toast.error("New passwords do not match");
-      return;
-    }
-    changePassword(
-      {
-        currentPassword: passwords.current,
-        newPassword: passwords.new,
-      },
-      {
-        onSuccess: () => {
-          setPasswords({ current: "", new: "", confirm: "" });
+    try {
+      const validated = await changePasswordSchema.validate(
+        {
+          currentPassword: passwords.current,
+          newPassword: passwords.new,
+          confirmPassword: passwords.confirm,
         },
+        { abortEarly: true }
+      );
+      changePassword(
+        {
+          currentPassword: validated.currentPassword,
+          newPassword: validated.newPassword,
+        },
+        {
+          onSuccess: () => {
+            setPasswords({ current: "", new: "", confirm: "" });
+          },
+        }
+      );
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message);
       }
-    );
+    }
   };
 
   return (
