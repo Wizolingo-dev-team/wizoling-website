@@ -1,4 +1,7 @@
-import React from "react";
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Disc3 } from "lucide-react";
 
 type DashboardLoaderProps = {
@@ -10,11 +13,17 @@ export default function DashboardLoader({
   message = "Loading your Dashboard. Please wait...",
   eyebrow = "Wiz Ofuasia (Wiz Boyy)",
 }: DashboardLoaderProps) {
-  return (
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const content = (
     <div
       role="status"
       aria-live="polite"
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-neutral-50/95 px-6 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-neutral-50 px-6"
     >
       <div className="flex flex-col items-center text-center space-y-6">
         {/* Bouncing Rounded-Full Red Border Emblem */}
@@ -45,5 +54,10 @@ export default function DashboardLoader({
       </div>
     </div>
   );
-}
 
+  if (mounted && typeof document !== "undefined") {
+    return createPortal(content, document.body);
+  }
+
+  return content;
+}
