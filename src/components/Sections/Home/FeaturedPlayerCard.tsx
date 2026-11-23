@@ -5,11 +5,11 @@ import Image from "next/image";
 import { Play, Pause, Heart, Repeat2, Share2, ExternalLink } from "lucide-react";
 import { cn } from "@src/lib/utils";
 
-const YOLO_COVER =
-  "https://i.ffmcdn.com/v1/ffm-delivery-1/bg8fjpPmhCn2UeXda1a_fvVczwY09uuv/w_1108,h_1108,c_lfill,f_jpg/link/5bf2e5571c00004b00612871/6a873ea82900008100faedab_aa23bed70cb55d70c6de28c07daa37ca.jpg.img";
+const MORE_BILLIONAIRES_COVER =
+  "https://i.ffmcdn.com/v1/ffm-delivery-1/E_-P7DRsPbDl5sFEs9AcA42RPxQpXjlj/w_1108,h_1108,c_lfill,f_jpg/link/b0f643a4b9d44101797f7fac6c2bc8fc.jpeg.img";
 
-const YOLO_SMART_LINK =
-  "https://orcd.co/wiz_ofuasia-yolo?utm_source=ig&utm_medium=social&utm_content=link_in_bio";
+const MORE_BILLIONAIRES_SMART_LINK =
+  "https://orcd.co/wiz_ofuasia-more_billionaires?utm_source=ig&utm_medium=social&utm_content=link_in_bio";
 
 export default function HomeFeaturedPlayerCard() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -19,26 +19,26 @@ export default function HomeFeaturedPlayerCard() {
     if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share({
-          title: "Wiz Ofuasia - Yolo (Single)",
-          url: YOLO_SMART_LINK,
+          title: "Wiz Ofuasia (Wizboyy) featuring Zoro - More Billionaires (Single)",
+          url: MORE_BILLIONAIRES_SMART_LINK,
         });
         return;
       } catch {
         // fallback below
       }
     }
-    window.open(YOLO_SMART_LINK, "_blank", "noopener,noreferrer");
+    window.open(MORE_BILLIONAIRES_SMART_LINK, "_blank", "noopener,noreferrer");
   };
 
   return (
     <section className="py-16 lg:py-24">
       <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[540px] overflow-hidden border border-white/15 bg-[#181818] shadow-2xl">
-          {/* Top Cover Image with Yolo Single Overlay */}
+          {/* Top Cover Image with Single Overlay */}
           <div className="relative aspect-[4/4.3] w-full overflow-hidden bg-[#222222]">
             <Image
-              src={YOLO_COVER}
-              alt="Wiz Ofuasia - Yolo - Single"
+              src={MORE_BILLIONAIRES_COVER}
+              alt="Wiz Ofuasia ft. Zoro - More Billionaires"
               fill
               className="object-cover transition-transform duration-700 hover:scale-[1.03]"
             />
@@ -50,19 +50,19 @@ export default function HomeFeaturedPlayerCard() {
                 [SINGLE]
               </p>
               <h3 className="font-display text-2xl sm:text-3xl font-extrabold uppercase tracking-wide text-white">
-                YOLO
+                MORE BILLIONAIRES
               </h3>
               <p className="text-xs text-white/80">
-                by <span className="underline underline-offset-4">Wiz Ofuasia</span>{" "}
+                by <span className="underline underline-offset-4">Wiz Ofuasia</span> ft. Zoro{" "}
                 <span className="mx-1.5 text-white/40">|</span> Single
               </p>
             </div>
 
-            {/* Hidden Audio Embed when Playing */}
+            {/* Hidden Audio/Video Embed when Playing */}
             {isPlaying && (
               <iframe
-                title="Wiz Ofuasia - Yolo"
-                src="https://www.youtube-nocookie.com/embed/WMS6zROCjGY?autoplay=1&rel=0"
+                title="Wiz Ofuasia ft. Zoro - More Billionaires"
+                src="https://www.youtube-nocookie.com/embed/UnwB2NGrU1I?autoplay=1&rel=0"
                 allow="autoplay; encrypted-media"
                 className="sr-only"
               />
@@ -75,8 +75,8 @@ export default function HomeFeaturedPlayerCard() {
               <div className="flex items-center gap-3 min-w-0">
                 <div className="relative size-11 shrink-0 overflow-hidden border border-white/15 bg-[#333132]">
                   <Image
-                    src={YOLO_COVER}
-                    alt="Wiz Ofuasia - Yolo Cover"
+                    src={MORE_BILLIONAIRES_COVER}
+                    alt="Wiz Ofuasia ft. Zoro - More Billionaires Cover"
                     fill
                     className="object-cover"
                   />
@@ -84,7 +84,7 @@ export default function HomeFeaturedPlayerCard() {
                 <button
                   type="button"
                   onClick={() => setIsPlaying((prev) => !prev)}
-                  aria-label={isPlaying ? "Pause Yolo" : "Play Yolo"}
+                  aria-label={isPlaying ? "Pause More Billionaires" : "Play More Billionaires"}
                   className="inline-flex size-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-[#D70E1D]"
                 >
                   {isPlaying ? (
@@ -95,12 +95,12 @@ export default function HomeFeaturedPlayerCard() {
                 </button>
                 <div className="min-w-0">
                   <p className="truncate text-xs font-bold text-white">
-                    Wiz Ofuasia - Yolo - Single
+                    More Billionaires (feat. Zoro)
                   </p>
                   <div className="mt-0.5 flex items-center gap-2 text-[11px] text-white/60">
-                    <span className="truncate">by Wiz Ofuasia</span>
+                    <span className="truncate">by Wiz Ofuasia ft. Zoro</span>
                     <a
-                      href={YOLO_SMART_LINK}
+                      href={MORE_BILLIONAIRES_SMART_LINK}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 border border-white/25 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white/85 transition-colors hover:border-[#D70E1D] hover:bg-[#D70E1D] hover:text-white"
@@ -128,13 +128,13 @@ export default function HomeFeaturedPlayerCard() {
                   )}
                 />
               </div>
-              <span>YOLO</span>
+              <span>MORE BILLIONAIRES</span>
               <div className="flex items-center gap-2.5 pl-1">
                 <a
-                  href={YOLO_SMART_LINK}
+                  href={MORE_BILLIONAIRES_SMART_LINK}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Open Yolo on streaming platforms"
+                  aria-label="Open More Billionaires on streaming platforms"
                   className="hover:text-white transition-colors"
                 >
                   <Repeat2 className="size-3.5" />
@@ -153,7 +153,7 @@ export default function HomeFeaturedPlayerCard() {
                 <button
                   type="button"
                   onClick={handleShare}
-                  aria-label="Share Yolo"
+                  aria-label="Share More Billionaires"
                   className="hover:text-white transition-colors"
                 >
                   <Share2 className="size-3.5" />

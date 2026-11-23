@@ -4,7 +4,7 @@ import VideosSections from "@src/components/Sections/Videos";
 export const metadata: Metadata = {
   title: "Music Videos",
   description:
-    "Watch official music videos and visuals by Wiz Ofuasia (Wizboyy), including More Billionaires ft. Zoro, Magic, Fine Baby, Gimme Ur Love, Salambala, and Lovinjitis.",
+    "Watch official music videos and visuals by Wiz Ofuasia (Wizboyy), including High Vibration, More Billionaires ft. Zoro, Magic, Fine Baby, Gimme Ur Love, Salambala, and Lovinjitis.",
   alternates: { canonical: "/videos" },
   openGraph: {
     title: "Music Videos | Wiz Ofuasia (Wizboyy)",
