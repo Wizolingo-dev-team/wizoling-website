@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
-import { NEWS_POSTS } from "@src/constants/news";
+import { blogService } from "@src/lib/requests/blogManagement";
 
 const SITE_URL = "https://www.wizofuasia.com";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -51,12 +51,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const newsRoutes: MetadataRoute.Sitemap = NEWS_POSTS.map((post) => ({
-    url: `${SITE_URL}/news/${post.slug}`,
-    lastModified: new Date(post.isoDate),
-    changeFrequency: "monthly",
-    priority: 0.7,
-  }));
+  let newsRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const res = await blogService.getAllPosts({ limit: 100 });
+    const posts = Array.isArray(res?.data) ? res.data : [];
+    newsRoutes = posts.map((post) => ({
+      url: `${SITE_URL}/news/${post.slug}`,
+      lastModified: new Date(post.isoDate || post.updatedAt || now),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    }));
+  } catch {
+    // Backend API offline or unreachable during build
+  }
 
   return [...staticRoutes, ...newsRoutes];
 }

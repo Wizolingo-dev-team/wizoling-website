@@ -1,9 +1,13 @@
-import React from "react";
+"use client";
+
+import React, { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Breadcrumb from "@src/components/Breadcrumb";
-import { NEWS_POSTS, type NewsPost } from "@src/constants/news";
+import type { NewsPost } from "@src/constants/news";
+import { useGetAllBlogPosts } from "@src/hooks/blogManagement";
+import { normalizeBlogPost } from "@src/utils/normalizeBlogPost";
 import NewsSidebar from "./NewsSidebar";
 
 type SinglePostProps = {
@@ -11,11 +15,20 @@ type SinglePostProps = {
 };
 
 export default function SingleNewsPost({ post }: SinglePostProps) {
-  const currentIndex = NEWS_POSTS.findIndex((p) => p.slug === post.slug);
-  const prevPost = currentIndex > 0 ? NEWS_POSTS[currentIndex - 1] : undefined;
+  const { data: blogData } = useGetAllBlogPosts();
+
+  const allPosts = useMemo(() => {
+    if (blogData?.posts && Array.isArray(blogData.posts)) {
+      return blogData.posts.map(normalizeBlogPost);
+    }
+    return [];
+  }, [blogData]);
+
+  const currentIndex = allPosts.findIndex((p) => p.slug === post.slug);
+  const prevPost = currentIndex > 0 ? allPosts[currentIndex - 1] : undefined;
   const nextPost =
-    currentIndex >= 0 && currentIndex < NEWS_POSTS.length - 1
-      ? NEWS_POSTS[currentIndex + 1]
+    currentIndex >= 0 && currentIndex < allPosts.length - 1
+      ? allPosts[currentIndex + 1]
       : undefined;
 
   return (
@@ -59,40 +72,50 @@ export default function SingleNewsPost({ post }: SinglePostProps) {
                   src={post.coverImage}
                   alt={post.title}
                   width={1200}
-                  height={1800}
+                  height={800}
                   priority
                   sizes="(max-width: 1024px) 100vw, 60vw"
-                  className="mx-auto block h-auto max-h-[720px] w-full object-contain"
+                  className="mx-auto block h-auto max-h-[640px] w-full object-contain"
                 />
               </div>
 
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 text-xs uppercase tracking-[0.2em] text-white/60">
-                <span>By {post.author}</span>
+              {/* Author byline */}
+              <div className="flex items-center gap-3 border-y border-white/10 py-4 text-xs uppercase tracking-[0.16em] text-white/60">
+                <span>By <strong className="text-white">{post.author}</strong></span>
+                <span>&bull;</span>
                 <span>{post.date}</span>
               </div>
 
-              <div className="space-y-5 text-sm sm:text-base leading-[1.9] text-white/80">
+              {/* Body paragraphs */}
+              <div className="space-y-5 text-sm sm:text-base leading-relaxed text-white/85">
                 {post.content.map((paragraph, idx) => (
-                  <p key={idx}>{paragraph}</p>
+                  <p key={idx} className="leading-relaxed">
+                    {paragraph}
+                  </p>
                 ))}
               </div>
 
               {/* Tags */}
-              <div className="border-t border-white/10 pt-6 flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/50 mr-2">
-                  TAGS:
-                </span>
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="border border-white/20 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/75"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
+              {post.tags.length > 0 && (
+                <div className="border-t border-white/10 pt-6 space-y-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/50">
+                    Tagged
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.map((tag) => (
+                      <Link
+                        key={tag}
+                        href={`/news?tag=${encodeURIComponent(tag)}`}
+                        className="border border-white/20 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-white/75 transition-colors hover:border-[#D70E1D] hover:text-white"
+                      >
+                        #{tag}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              {/* Previous / Next Post Navigation (no comments or likes) */}
+              {/* Prev / Next Article Navigation */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-white/10 pt-6">
                 <div>
                   {prevPost && (
@@ -143,4 +166,3 @@ export default function SingleNewsPost({ post }: SinglePostProps) {
     </div>
   );
 }
-

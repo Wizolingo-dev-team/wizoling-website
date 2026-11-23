@@ -22,7 +22,7 @@ export default defineConfig({
     globals: false,
     css: false,
     setupFiles: ["./vitest.setup.ts"],
-    pool: "threads",
+    pool: "forks",
     testTimeout: 15000,
     exclude: ["node_modules/**", "e2e/**", ".next/**"],
     env: {

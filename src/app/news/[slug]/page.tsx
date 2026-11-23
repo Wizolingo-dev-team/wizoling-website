@@ -1,12 +1,26 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SingleNewsPost from "@src/components/Sections/News/SinglePost";
-import { NEWS_POSTS, getNewsPostBySlug } from "@src/constants/news";
+import { NEWS_POSTS, getNewsPostBySlug, type NewsPost } from "@src/constants/news";
+import { blogService } from "@src/lib/requests/blogManagement";
+import { normalizeBlogPost } from "@src/utils/normalizeBlogPost";
 
 const SITE_URL = "https://www.wizofuasia.com";
 
+// Pre-render known static slugs at build time; new API slugs render on-demand
 export function generateStaticParams() {
   return NEWS_POSTS.map((post) => ({ slug: post.slug }));
+}
+
+/** Attempts API first, then falls back to static NEWS_POSTS data */
+async function resolvePost(slug: string): Promise<NewsPost | undefined> {
+  try {
+    const response = await blogService.getPostBySlug(slug);
+    if (response?.data) return normalizeBlogPost(response.data);
+  } catch {
+    // API unavailable — fall back to static
+  }
+  return getNewsPostBySlug(slug);
 }
 
 export async function generateMetadata({
@@ -15,7 +29,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = getNewsPostBySlug(slug);
+  const post = await resolvePost(slug);
   if (!post) {
     return {
       title: "Article Not Found",
@@ -57,7 +71,7 @@ export default async function SingleNewsPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = getNewsPostBySlug(slug);
+  const post = await resolvePost(slug);
   if (!post) notFound();
 
   const articleJsonLd = {
@@ -89,4 +103,3 @@ export default async function SingleNewsPage({
     </>
   );
 }
-

@@ -55,7 +55,7 @@ export default function BiographyBanner() {
               Wiz Ofuasia is an internationally acclaimed Nigerian artist,
               producer, and multi-instrumentalist whose music blends the soul of
               African Highlife with contemporary Afrobeats. With two decades of
-              musical excellence, performances across 20+ countries, and a
+              musical excellence, performances across 25+ countries, and a
               catalog of timeless fan favorites, Wiz continues to connect
               generations through music while exploring new dimensions of his
               artistry.
