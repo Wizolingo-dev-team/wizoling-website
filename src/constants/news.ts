@@ -29,13 +29,14 @@ export const NEWS_POSTS: NewsPost[] = [
       "Wiz Ofuasia is a Nigerian-born singer, songwriter, multi-instrumentalist, and producer widely celebrated for his chart-topping Highlife and Afrobeats anthems, including his breakthrough classic 'One Plus One'. Born Isioma Ofuasia and affectionately known across Africa and the diaspora as Wizboyy, his music bridges traditional West African rhythms with crisp, modern production.",
       "While fans know his signature melodies, vibrant hooks, and commanding live presence, there is a rich story behind the studio discipline and family roots that shaped him. Here are five remarkable facts about Wiz Ofuasia's artistic journey:",
       "1. His Childhood Nickname — 'Big Boy': Long before packed concert halls and international festival stages, Wiz Ofuasia's parents gave him the affectionate nickname 'Big Boy'. Even after decades of global touring and acclaim, his parents still call him 'Big Boy' to this day.",
-      "2. Sierra Leone Was His First International Tour Destination: In 2011, Wiz Ofuasia took his sound beyond Nigeria for the very first time when he traveled to Sierra Leone. His electrifying connection with audiences led to a return invitation during Sierra Leone's 50th Independence Day celebrations as a featured guest artist — a milestone that propelled his international touring career across more than 20 countries.",
+      "2. Sierra Leone Was His First International Tour Destination: In 2011, Wiz Ofuasia took his sound beyond Nigeria for the very first time when he traveled to Sierra Leone. His electrifying connection with audiences led to a return invitation during Sierra Leone's 50th Independence Day celebrations as a featured guest artist — a milestone that propelled his international touring career across more than 25 countries.",
       "3. Raised in Music From Age 6: Music wasn't a late hobby for Wiz Ofuasia — it was his first language. Raised by a musically gifted mother and a devoted church singer who brought him to choir rehearsals at age 6, he officially joined the church choir at age 8. There, he mastered foundational solfa notation, vocal harmony, and musical composition long before stepping into a commercial recording booth.",
       "4. His Very First Instrument Was the Guitar: Though today's fans often see him directing full live bands and layering complex studio arrangements, the very first instrument Wiz Ofuasia ever learned was the guitar. Those early acoustic chord progressions still inform the warm, melodic Highlife guitar lines heard throughout his discography.",
       "5. Eight Months Crafting 'Jacuzzi' ft. Ice Prince: In an industry where singles are often rushed out in days, Wiz Ofuasia treats songwriting and sound design as fine craftsmanship. While most records take around three months from concept to master, his beloved collaboration 'Jacuzzi' featuring award-winning rapper Ice Prince took nearly 8 months of meticulous writing, arrangement, and vocal layering — the longest he has ever spent perfecting a single track.",
       "Whether performing with a full live band or producing fresh records through Wizolingo Music, these early lessons in patience, musicality, and heritage continue to define every chapter of Wiz Ofuasia's sound.",
     ],
   },
+  /* Commented out per request:
   {
     slug: "wiz-ofuasia-wizboy-aso-rock-dallas",
     title: "Wiz Ofuasia (Wizboyy) Live at Aso Rock Dallas!",
@@ -55,6 +56,7 @@ export const NEWS_POSTS: NewsPost[] = [
       "The Aso Rock Dallas appearance stood out as one of the defining highlights of his 2022 US run, reinforcing his reputation as one of Afrobeats and Highlife's most engaging live performers on both sides of the Atlantic.",
     ],
   },
+  */
   {
     slug: "watch-the-anthem-for-the-africa-cup-of-nations-2015",
     title: "Watch the Anthem for the Africa Cup of Nations 2015",

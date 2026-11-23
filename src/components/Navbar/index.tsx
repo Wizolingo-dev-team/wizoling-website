@@ -12,55 +12,14 @@ import {
   Home,
   Music,
   Calendar,
-  Youtube,
-  Radio,
-  Disc3,
-  Instagram,
-  Film,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { NAV_LINKS } from "@src/constants/navigation";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-  SheetTrigger,
-} from "@src/components/ui/sheet";
 import BookingModal from "@src/components/BookingModal";
 import CartDrawer from "@src/components/CartDrawer";
 import UserMenu from "@src/components/Navbar/UserMenu";
 import { isWhiteBackgroundRoute } from "@src/constants/pageBackgrounds";
 import { cn } from "@src/lib/utils";
-
-const SOCIAL_LINKS = [
-  {
-    label: "YouTube",
-    href: "https://www.youtube.com/@wiz_ofuasia",
-    icon: Youtube,
-    external: true,
-  },
-  {
-    label: "wizboyyVEVO",
-    href: "https://www.youtube.com/@wizboyyVEVO",
-    icon: Radio,
-    external: true,
-  },
-  {
-    label: "Instagram",
-    href: "https://www.instagram.com/wizofuasia/",
-    icon: Instagram,
-    external: true,
-  },
-  {
-    label: "Threads",
-    href: "https://www.threads.com/@wizofuasia?xmt=AQG0dH14npSpoXkylf7lOm8yRAV6FXk4Z-dxhFXJBVroc3g",
-    icon: Disc3,
-    external: true,
-  },
-  { label: "Songs", href: "/songs", icon: Music, external: false },
-  { label: "Videos", href: "/videos", icon: Film, external: false },
-];
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -231,75 +190,20 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Right: Cart Drawer + Login/Avatar -> + Hamburger Slide-In Sheet when scrolled */}
-          <div className="hidden lg:flex items-center justify-end gap-4 min-w-[160px] shrink-0">
+          {/* Right: Cart Drawer + User/Login + Bookings Modal Trigger (Always visible on desktop) */}
+          <div className="hidden lg:flex items-center justify-end gap-3.5 min-w-[160px] shrink-0">
             <CartDrawer />
             <UserMenu />
-            {scrolled && (
-              <Sheet>
-                <SheetTrigger asChild>
-                  <button
-                    type="button"
-                    aria-label="Open side info panel"
-                    className="group flex flex-col items-end justify-center gap-[6px] p-2 focus:outline-none"
-                  >
-                    <span className="block h-[1.5px] w-7 bg-white transition-colors group-hover:bg-[#D70E1D]" />
-                    <span className="block h-[1.5px] w-7 bg-white transition-colors group-hover:bg-[#D70E1D]" />
-                  </button>
-                </SheetTrigger>
-                <SheetContent
-                  side="right"
-                  className="flex flex-col items-center justify-center text-center bg-[#0D0D0D] border-l border-white/10"
+            <BookingModal
+              trigger={
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center bg-[#D70E1D] px-4 py-2 text-[11px] font-bold uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#B50B18]"
                 >
-                  <div className="space-y-6">
-                    <SheetTitle className="font-display text-2xl font-extrabold tracking-tight text-white">
-                      Wiz Ofuasia
-                    </SheetTitle>
-                    <SheetDescription className="space-y-1.5 text-xs leading-relaxed text-white/75">
-                      <span className="block">Management &amp; Bookings</span>
-                      <a
-                        href="mailto:wizofuasia@gmail.com"
-                        className="block transition-colors hover:text-[#D70E1D]"
-                      >
-                        wizofuasia@gmail.com
-                      </a>
-                    </SheetDescription>
-
-                    <div className="flex items-center justify-center gap-4 pt-2">
-                      {SOCIAL_LINKS.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                          <Link
-                            key={item.label}
-                            href={item.href}
-                            target={item.external ? "_blank" : undefined}
-                            rel={item.external ? "noopener noreferrer" : undefined}
-                            aria-label={item.label}
-                            title={item.label}
-                            className="text-white/75 hover:text-[#D70E1D] transition-colors"
-                          >
-                            <Icon className="size-4" />
-                          </Link>
-                        );
-                      })}
-                    </div>
-
-                    <div className="pt-4">
-                      <BookingModal
-                        trigger={
-                          <button
-                            type="button"
-                            className="inline-flex items-center justify-center bg-[#D70E1D] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white transition-colors hover:bg-[#B50B18]"
-                          >
-                            BOOKING INQUIRY
-                          </button>
-                        }
-                      />
-                    </div>
-                  </div>
-                </SheetContent>
-              </Sheet>
-            )}
+                  Bookings
+                </button>
+              }
+            />
           </div>
 
           {/* Mobile Top Right: Cart Drawer, User/Login & Bookings Modal Trigger */}
