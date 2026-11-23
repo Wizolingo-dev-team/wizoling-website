@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@src/components/ui/dialog";
 import FieldError from "@src/components/_atoms/FieldError";
+import { DatePicker } from "@src/components/ui/date-picker";
 import {
   bookingInquirySchema,
   type BookingInquiryFields,
@@ -253,12 +254,17 @@ export default function BookingModal({ trigger }: BookingModalProps) {
                 <label htmlFor="bk-eventDate" className={labelCls}>
                   Preferred Date
                 </label>
-                <input
+                <DatePicker
                   id="bk-eventDate"
-                  type="date"
+                  placeholder="Select preferred date"
                   value={fields.eventDate}
-                  onChange={set("eventDate")}
-                  className={`${inputCls} [color-scheme:dark]`}
+                  onChange={(dateStr) => {
+                    setFields((prev) => ({ ...prev, eventDate: dateStr }));
+                    if (errors.eventDate) {
+                      setErrors((prev) => ({ ...prev, eventDate: undefined }));
+                    }
+                  }}
+                  minDate={new Date()}
                 />
                 <FieldError message={errors.eventDate} />
               </div>
