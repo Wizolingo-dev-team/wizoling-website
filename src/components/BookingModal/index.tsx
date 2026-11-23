@@ -26,7 +26,7 @@ const EVENT_TYPES: { value: BookingInquiryFields["eventType"]; label: string }[]
   { value: "private", label: "Private Event" },
   { value: "corporate", label: "Corporate Event" },
   { value: "tv-radio", label: "TV / Radio Appearance" },
-   { value: "Work-with-me", label: "Work with With Wiz Ofuasia" },
+   { value: "Work-with-me", label: "Work with Wiz Ofuasia" },
   { value: "other", label: "Other" },
 ];
 
