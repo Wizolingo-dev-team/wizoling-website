@@ -1,12 +1,26 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { NEWS_POSTS } from "@src/constants/news";
+import { useGetAllBlogPosts } from "@src/hooks/blogManagement";
+import { normalizeBlogPost } from "@src/utils/normalizeBlogPost";
+import type { NewsPost } from "@src/constants/news";
 
 export default function HomeNewsHighlights() {
-  const featuredPosts = NEWS_POSTS.slice(0, 3);
+  const { data: blogData, isLoading, isError } = useGetAllBlogPosts();
+
+  const featuredPosts: NewsPost[] = useMemo(() => {
+    if (blogData?.posts && Array.isArray(blogData.posts)) {
+      return blogData.posts.map(normalizeBlogPost).slice(0, 3);
+    }
+    return [];
+  }, [blogData]);
+
+  // If there are no posts from the backend and not loading, don't show empty block or dummy posts
+  if (!isLoading && (isError || featuredPosts.length === 0)) {
+    return null;
+  }
 
   return (
     <section className="py-16 lg:py-24">
@@ -29,41 +43,59 @@ export default function HomeNewsHighlights() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {featuredPosts.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/news/${post.slug}`}
-              className="group flex flex-col border border-white/10 bg-[#333132]/50 backdrop-blur-sm transition-colors hover:border-[#D70E1D]/60"
-            >
-              <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#181818] border-b border-white/10">
-                <Image
-                  src={post.coverImage}
-                  alt={post.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                />
-              </div>
-              <div className="flex flex-1 flex-col justify-between p-6 space-y-3">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em]">
-                    <span className="text-[#D70E1D]">{post.category}</span>
-                    <span className="text-white/40">/</span>
-                    <span className="text-white/60">{post.date}</span>
+          {isLoading
+            ? [0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="border border-white/10 bg-[#333132]/50 animate-pulse"
+                >
+                  <div className="aspect-[4/5] w-full bg-white/5" />
+                  <div className="p-6 space-y-3">
+                    <div className="flex gap-3">
+                      <div className="h-2.5 w-16 bg-white/10 rounded" />
+                      <div className="h-2.5 w-20 bg-white/10 rounded" />
+                    </div>
+                    <div className="h-5 w-4/5 bg-white/10 rounded" />
+                    <div className="h-3 w-full bg-white/10 rounded" />
+                    <div className="h-3 w-2/3 bg-white/10 rounded" />
                   </div>
-                  <h3 className="font-display text-lg font-bold uppercase tracking-wide text-white group-hover:text-[#D70E1D] transition-colors line-clamp-2">
-                    {post.title}
-                  </h3>
-                  <p className="text-xs leading-relaxed text-white/65 line-clamp-2">
-                    {post.excerpt}
-                  </p>
                 </div>
-                <span className="inline-block pt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70 group-hover:text-white">
-                  READ MORE &rarr;
-                </span>
-              </div>
-            </Link>
-          ))}
+              ))
+            : featuredPosts.map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/news/${post.slug}`}
+                  className="group flex flex-col border border-white/10 bg-[#333132]/50 backdrop-blur-sm transition-colors hover:border-[#D70E1D]/60"
+                >
+                  <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#181818] border-b border-white/10">
+                    <Image
+                      src={post.coverImage}
+                      alt={post.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="flex flex-1 flex-col justify-between p-6 space-y-3">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.2em]">
+                        <span className="text-[#D70E1D]">{post.category}</span>
+                        <span className="text-white/40">/</span>
+                        <span className="text-white/60">{post.date}</span>
+                      </div>
+                      <h3 className="font-display text-lg font-bold uppercase tracking-wide text-white group-hover:text-[#D70E1D] transition-colors line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-xs leading-relaxed text-white/65 line-clamp-2">
+                        {post.excerpt}
+                      </p>
+                    </div>
+                    <span className="inline-block pt-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70 group-hover:text-white">
+                      READ MORE &rarr;
+                    </span>
+                  </div>
+                </Link>
+              ))}
         </div>
       </div>
     </section>

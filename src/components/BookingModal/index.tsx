@@ -16,6 +16,9 @@ import {
   bookingInquirySchema,
   type BookingInquiryFields,
 } from "@src/validations/bookingManagement";
+import { useCreateBooking } from "@src/hooks/bookingManagement";
+import { useToast } from "@src/hooks/useToast";
+import type { BookingEventType } from "@src/types/bookingManagement";
 
 type BookingModalProps = {
   trigger: ReactNode;
@@ -27,7 +30,7 @@ const EVENT_TYPES: { value: BookingInquiryFields["eventType"]; label: string }[]
   { value: "private", label: "Private Event" },
   { value: "corporate", label: "Corporate Event" },
   { value: "tv-radio", label: "TV / Radio Appearance" },
-   { value: "Work-with-me", label: "Work with Wiz Ofuasia" },
+  { value: "Work-with-me", label: "Work with Wiz Ofuasia" },
   { value: "other", label: "Other" },
 ];
 
@@ -47,11 +50,37 @@ export default function BookingModal({ trigger }: BookingModalProps) {
   const [errors, setErrors] = useState<Partial<Record<keyof BookingInquiryFields, string>>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
 
+  const createBooking = useCreateBooking();
+  const toast = useToast();
+
   const set = (key: keyof BookingInquiryFields) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       setFields((prev) => ({ ...prev, [key]: e.target.value }));
       if (errors[key]) setErrors((prev) => ({ ...prev, [key]: undefined }));
     };
+
+  /** Opens the user's email client with form data as mailto fallback */
+  const openMailtoFallback = (validated: BookingInquiryFields) => {
+    const subject = encodeURIComponent(
+      `Booking Inquiry — ${validated.eventType.replace("-", "/")} — ${validated.fullName}`
+    );
+    const body = encodeURIComponent(
+      [
+        `Name: ${validated.fullName}`,
+        `Email: ${validated.email}`,
+        validated.phone ? `Phone: ${validated.phone}` : null,
+        `Event Type: ${EVENT_TYPES.find((t) => t.value === validated.eventType)?.label ?? validated.eventType}`,
+        validated.eventDate ? `Preferred Date: ${validated.eventDate}` : null,
+        validated.country ? `Country/City: ${validated.country}` : null,
+        ``,
+        `Message:`,
+        validated.message,
+      ]
+        .filter((line): line is string => line !== null)
+        .join("\n")
+    );
+    window.location.href = `mailto:wizofuasia@gmail.com?subject=${subject}&body=${body}`;
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -74,30 +103,30 @@ export default function BookingModal({ trigger }: BookingModalProps) {
 
     setStatus("submitting");
 
-    // Build mailto: fallback — opens user's email client with form data pre-filled
-    const subject = encodeURIComponent(
-      `Booking Inquiry — ${validated.eventType.replace("-", "/")} — ${validated.fullName}`
-    );
-    const body = encodeURIComponent(
-      [
-        `Name: ${validated.fullName}`,
-        `Email: ${validated.email}`,
-        validated.phone ? `Phone: ${validated.phone}` : null,
-        `Event Type: ${EVENT_TYPES.find((t) => t.value === validated.eventType)?.label ?? validated.eventType}`,
-        validated.eventDate ? `Preferred Date: ${validated.eventDate}` : null,
-        validated.country ? `Country/City: ${validated.country}` : null,
-        ``,
-        `Message:`,
-        validated.message,
-      ]
-        .filter((line): line is string => line !== null)
-        .join("\n")
-    );
-
-    // Slight delay so the spinner shows, then open mailto and show success
-    await new Promise((r) => setTimeout(r, 600));
-    window.location.href = `mailto:wizofuasia@gmail.com?subject=${subject}&body=${body}`;
-    setStatus("success");
+    try {
+      await createBooking.mutateAsync({
+        fullName: validated.fullName,
+        name: validated.fullName,
+        email: validated.email,
+        phone: validated.phone || undefined,
+        phoneNumber: validated.phone || undefined,
+        eventType: validated.eventType as BookingEventType,
+        eventDate: validated.eventDate || undefined,
+        country: validated.country || undefined,
+        message: validated.message,
+      });
+      toast.success(
+        "Booking inquiry submitted! We'll be in touch within 2–3 business days."
+      );
+      setStatus("success");
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error
+          ? err.message
+          : "Failed to submit booking inquiry to the server. Please try again.";
+      toast.error(errorMsg);
+      setStatus("idle");
+    }
   };
 
   const handleClose = (nextOpen: boolean) => {
@@ -126,37 +155,31 @@ export default function BookingModal({ trigger }: BookingModalProps) {
           </p>
           <DialogTitle>Booking Inquiry</DialogTitle>
           <DialogDescription>
-            Fill in the form and your email client will open with all details pre-filled — ready to send.
+            Fill in the form below and we&apos;ll get back to you within 2–3
+            business days.
           </DialogDescription>
         </DialogHeader>
 
         {status === "success" ? (
-          /* ── Success state ── */
-          <div className="flex flex-col items-center gap-4 py-10 text-center">
-            <span className="inline-flex size-16 items-center justify-center rounded-full border border-[#D70E1D]/30 bg-[#D70E1D]/10">
-              <CheckCircle2 className="size-8 text-[#D70E1D]" />
-            </span>
-            <div>
-              <p className="font-display text-lg font-bold uppercase tracking-wide text-white">
-                Your email is ready!
-              </p>
-              <p className="mt-1 text-sm text-white/60">
-                Your default email app has opened with all your details pre-filled. Just hit{" "}
-                <strong className="text-white">Send</strong> to submit your inquiry.
-              </p>
-            </div>
+          <div className="flex flex-col items-center gap-4 py-8 text-center">
+            <CheckCircle2 className="size-12 text-emerald-500" />
+            <p className="font-display text-lg font-bold uppercase tracking-wide text-white">
+              Inquiry Sent!
+            </p>
+            <p className="max-w-xs text-sm leading-relaxed text-white/65">
+              Thank you for your interest. Our bookings team will review your
+              inquiry and respond within 2–3 business days.
+            </p>
             <button
               type="button"
               onClick={() => handleClose(false)}
-              className="mt-2 inline-flex items-center justify-center border border-white/20 px-6 py-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-white transition-colors hover:border-[#D70E1D] hover:text-[#D70E1D]"
+              className="mt-2 bg-[#D70E1D] px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-white transition-colors hover:bg-[#B50B18]"
             >
               Close
             </button>
           </div>
         ) : (
-          /* ── Booking form ── */
-          <form onSubmit={handleSubmit} noValidate className="mt-4 space-y-4">
-
+          <form onSubmit={handleSubmit} className="space-y-5 pt-2" noValidate>
             {/* Row 1: Full Name + Email */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
@@ -294,7 +317,7 @@ export default function BookingModal({ trigger }: BookingModalProps) {
             {/* Footer */}
             <div className="flex items-center justify-between gap-3 pt-2 border-t border-white/10">
               <p className="text-[10px] text-white/40 leading-relaxed">
-                Your email client will open with the form pre-filled.
+                Your booking inquiry will be submitted to our management team.
               </p>
               <button
                 type="submit"
@@ -304,7 +327,7 @@ export default function BookingModal({ trigger }: BookingModalProps) {
                 {status === "submitting" ? (
                   <>
                     <Loader2 className="size-3.5 animate-spin" />
-                    Preparing…
+                    Submitting…
                   </>
                 ) : (
                   <>

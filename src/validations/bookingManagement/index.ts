@@ -16,11 +16,8 @@ export const bookingInquirySchema = yup.object({
   phone: yup.string().trim().optional().default(""),
   eventType: yup
     .string()
-    .required("Please select an event type")
-    .oneOf(
-      ["concert", "festival", "private", "corporate", "tv-radio", "other"],
-      "Invalid event type"
-    ),
+    .trim()
+    .required("Please select an event type"),
   eventDate: yup.string().trim().optional().default(""),
   country: yup.string().trim().optional().default(""),
   message: yup
