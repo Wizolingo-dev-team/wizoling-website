@@ -9,20 +9,22 @@ export type SongItem = {
   appleMusicUrl: string;
   youtubeUrl: string;
   deezerUrl: string;
+  smartLink?: string;
 };
 
 export const WIZ_SONGS: SongItem[] = [
   {
     id: "01",
-    title: "Yolo",
+    title: "High Vibration",
     artist: "Wiz Ofuasia",
     releaseType: "SINGLE",
-    coverUrl: "https://i.ffmcdn.com/v1/ffm-delivery-1/bg8fjpPmhCn2UeXda1a_fvVczwY09uuv/w_1108,h_1108,c_lfill,f_jpg/link/5bf2e5571c00004b00612871/6a873ea82900008100faedab_aa23bed70cb55d70c6de28c07daa37ca.jpg.img",
-    spotifyUrl: "https://orcd.co/wiz_ofuasia-yolo",
-    embedUrl: "https://www.youtube.com/embed/WMS6zROCjGY",
-    appleMusicUrl: "https://orcd.co/wiz_ofuasia-yolo",
-    youtubeUrl: "https://youtu.be/WMS6zROCjGY",
-    deezerUrl: "https://orcd.co/wiz_ofuasia-yolo",
+    coverUrl: "/images/high_vibration_wiz_ofuasia.png",
+    spotifyUrl: "https://orcd.co/wiz_ofuasia-high_vibration",
+    embedUrl: "https://www.youtube.com/embed/KzcfyMPy0WA?autoplay=1&rel=0",
+    appleMusicUrl: "https://orcd.co/wiz_ofuasia-high_vibration",
+    youtubeUrl: "https://youtu.be/KzcfyMPy0WA",
+    deezerUrl: "https://orcd.co/wiz_ofuasia-high_vibration",
+    smartLink: "https://orcd.co/wiz_ofuasia-high_vibration",
   },
   {
     id: "02",
@@ -35,6 +37,7 @@ export const WIZ_SONGS: SongItem[] = [
     appleMusicUrl: "https://orcd.co/wiz_ofuasia-more_billionaires",
     youtubeUrl: "https://youtu.be/UnwB2NGrU1I",
     deezerUrl: "https://orcd.co/wiz_ofuasia-more_billionaires",
+    smartLink: "https://orcd.co/wiz_ofuasia-more_billionaires",
   },
   {
     id: "03",
@@ -49,7 +52,7 @@ export const WIZ_SONGS: SongItem[] = [
     deezerUrl: "https://www.deezer.com/us/artist/14713207",
   },
   {
-    id: "02",
+    id: "04",
     title: "Eriwa",
     artist: "Wiz Ofuasia",
     releaseType: "SINGLE",

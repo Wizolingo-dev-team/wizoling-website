@@ -229,6 +229,16 @@ export default function SongsTrackCarousel() {
 
                     {/* Platform Links */}
                     <div className="mt-3.5 pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/65">
+                      {song.smartLink && (
+                        <a
+                          href={song.smartLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[#D70E1D] hover:text-white transition-colors"
+                        >
+                          Smart Link <ExternalLink className="size-3" />
+                        </a>
+                      )}
                       <a
                         href={song.spotifyUrl}
                         target="_blank"
