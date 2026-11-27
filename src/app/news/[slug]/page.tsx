@@ -2,21 +2,31 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import SingleNewsPost from "@src/components/Sections/News/SinglePost";
 import { NEWS_POSTS, getNewsPostBySlug, type NewsPost } from "@src/constants/news";
-import { blogService } from "@src/lib/requests/blogManagement";
+import env from "@src/env";
+import type { BlogPost } from "@src/types/blogManagement";
+import type { ApiDataResponse } from "@src/types/common";
 import { normalizeBlogPost } from "@src/utils/normalizeBlogPost";
 
 const SITE_URL = "https://www.wizofuasia.com";
+
+export const dynamic = "force-dynamic";
 
 // Pre-render known static slugs at build time; new API slugs render on-demand
 export function generateStaticParams() {
   return NEWS_POSTS.map((post) => ({ slug: post.slug }));
 }
 
-/** Attempts API first, then falls back to static NEWS_POSTS data */
+/** Attempts server-safe API fetch first, then falls back to static NEWS_POSTS data */
 async function resolvePost(slug: string): Promise<NewsPost | undefined> {
   try {
-    const response = await blogService.getPostBySlug(slug);
-    if (response?.data) return normalizeBlogPost(response.data);
+    const baseUrl = env.NEXT_PUBLIC_API_BASE_URL.replace(/\/+$/, "");
+    const res = await fetch(`${baseUrl}/blogs/${encodeURIComponent(slug)}`, {
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const json = (await res.json()) as ApiDataResponse<BlogPost>;
+      if (json?.data) return normalizeBlogPost(json.data);
+    }
   } catch {
     // API unavailable — fall back to static
   }
@@ -74,12 +84,16 @@ export default async function SingleNewsPage({
   const post = await resolvePost(slug);
   if (!post) notFound();
 
+  const imageUrl = post.coverImage.startsWith("http")
+    ? post.coverImage
+    : `${SITE_URL}${post.coverImage}`;
+
   const articleJsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
     description: post.excerpt,
-    image: `${SITE_URL}${post.coverImage}`,
+    image: imageUrl,
     datePublished: post.isoDate,
     author: {
       "@type": "Person",

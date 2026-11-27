@@ -45,7 +45,7 @@ export default function VideosGrid() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 border border-white/30 px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white transition-colors hover:border-[#D70E1D] hover:bg-[#D70E1D]"
             >
-              @WIZ_OFUASIA <ExternalLink className="size-3.5" />
+              @WIZ_OFUASIA Youtube <ExternalLink className="size-3.5" />
             </a>
             <a
               href="https://www.youtube.com/@wizboyyVEVO"
